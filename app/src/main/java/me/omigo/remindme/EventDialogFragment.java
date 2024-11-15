@@ -28,6 +28,15 @@ public class EventDialogFragment extends DialogFragment {
     private AppDatabase appDatabase;
     private EventDao eventDao;
 
+    private EventDialogListener listener;
+
+    public interface EventDialogListener {
+        void onEventSaved(Event event);
+    }
+
+    public void setEventDialogListener(EventDialogListener listener) {
+        this.listener = listener;
+    }
 
     @Nullable
     @Override
@@ -52,7 +61,6 @@ public class EventDialogFragment extends DialogFragment {
     }
 
     private void showDatePicker() {
-        // Use Android's DatePickerDialog for date selection
         DatePickerDialog datePickerDialog = new DatePickerDialog(
                 requireContext(),
                 (view, year, month, dayOfMonth) -> {
@@ -67,7 +75,6 @@ public class EventDialogFragment extends DialogFragment {
     }
 
     private void showTimePicker() {
-        // Use Android's TimePickerDialog for time selection
         TimePickerDialog timePickerDialog = new TimePickerDialog(
                 requireContext(),
                 (view, hourOfDay, minute) -> {
@@ -94,11 +101,14 @@ public class EventDialogFragment extends DialogFragment {
 
         appDatabase = AppDatabase.getDatabase(requireContext());
         eventDao = appDatabase.eventDao();
-
         eventDao.insert(event);
 
         Toast.makeText(requireContext(), "Event saved!", Toast.LENGTH_SHORT).show();
-        // Process the event data, e.g., save to a database or pass to an activity
+
+        if (listener != null) {
+            listener.onEventSaved(event); // Notify listener about the new event
+        }
+
         dismiss();
     }
 }

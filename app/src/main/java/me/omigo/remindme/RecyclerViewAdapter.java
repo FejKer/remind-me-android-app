@@ -54,6 +54,12 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         holder.textViewTime.setText(event.getTime().toString());
     }
 
+    public void updateEvents(Event newEvents) {
+        Integer index = this.events.size();
+        this.events.add(newEvents);
+        notifyItemChanged(index);
+    }
+
     // Return the total count of items
     @Override
     public int getItemCount() {
