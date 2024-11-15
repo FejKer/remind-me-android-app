@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -17,11 +18,13 @@ import androidx.fragment.app.DialogFragment;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.Optional;
 
 public class EventDialogFragment extends DialogFragment {
 
     private EditText editTitle, editPlace;
     private TextView dateTextView, timeTextView;
+    private Switch isImportantSwitch;
     private LocalDate selectedDate;
     private LocalTime selectedTime;
 
@@ -47,6 +50,7 @@ public class EventDialogFragment extends DialogFragment {
         editPlace = view.findViewById(R.id.editPlace);
         dateTextView = view.findViewById(R.id.dateTextView);
         timeTextView = view.findViewById(R.id.timeTextView);
+        isImportantSwitch = ((Switch) view.findViewById(R.id.isImportant));
 
         Button datePickerButton = view.findViewById(R.id.datePickerButton);
         datePickerButton.setOnClickListener(v -> showDatePicker());
@@ -97,7 +101,7 @@ public class EventDialogFragment extends DialogFragment {
             return;
         }
 
-        Event event = new Event(title, place, selectedDate, selectedTime);
+        Event event = new Event(title, place, selectedDate, selectedTime, isImportantSwitch.isChecked() ? Priority.IMPORTANT : Priority.NORMAl);
 
         appDatabase = AppDatabase.getDatabase(requireContext());
         eventDao = appDatabase.eventDao();

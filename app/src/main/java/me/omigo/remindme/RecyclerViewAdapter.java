@@ -4,28 +4,29 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
+import java.util.Optional;
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder> {
 
     private List<Event> events;
 
-    // Constructor for the adapter
     public RecyclerViewAdapter(List<Event> events) {
         this.events = events;
     }
 
-    // ViewHolder class to hold item views
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public TextView textViewTitle;
         public TextView textViewPlace;
         public TextView textViewDate;
         public TextView textViewTime;
+        public TextView textViewIsImportant;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -33,6 +34,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             textViewPlace = itemView.findViewById(R.id.textViewPlace);
             textViewDate = itemView.findViewById(R.id.textViewDate);
             textViewTime = itemView.findViewById(R.id.textViewTime);
+            textViewIsImportant = itemView.findViewById(R.id.textViewIsImportant);
         }
     }
 
@@ -52,12 +54,19 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         holder.textViewPlace.setText(event.getPlace());
         holder.textViewDate.setText(event.getDate().toString());
         holder.textViewTime.setText(event.getTime().toString());
+        holder.textViewIsImportant.setText(Optional.ofNullable(event.getPriority()).orElse(Priority.NORMAl).getLabel());
     }
 
     public void updateEvents(Event newEvents) {
         Integer index = this.events.size();
         this.events.add(newEvents);
         notifyItemChanged(index);
+    }
+
+    public void removeEvents() {
+        int size = this.events.size();
+        this.events.clear();
+        notifyItemRangeRemoved(0, size);
     }
 
     // Return the total count of items

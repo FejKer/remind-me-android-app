@@ -45,9 +45,16 @@
         android:layout_height="wrap_content"
         android:text="Pick Time" />
 
+    <Switch
+        android:id="@+id/isImportant"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Important mode?" />
+
     <Button
         android:id="@+id/saveButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Save" />
+
 </LinearLayout>

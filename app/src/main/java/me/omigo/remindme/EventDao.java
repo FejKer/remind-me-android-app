@@ -13,4 +13,7 @@ public interface EventDao {
 
     @Query("SELECT * FROM events")
     List<Event> getAllEvents();
+
+    @Query("DELETE FROM events")
+    void purgeDb();
 }

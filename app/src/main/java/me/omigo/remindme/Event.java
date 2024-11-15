@@ -15,12 +15,22 @@ public class Event {
     private String place;
     private LocalDate date;
     private LocalTime time;
+    private Priority priority;
 
-    public Event(String title, String place, LocalDate date, LocalTime time) {
+    public Event(String title, String place, LocalDate date, LocalTime time, Priority priority) {
         this.title = title;
         this.place = place;
         this.date = date;
         this.time = time;
+        this.priority = priority;
+    }
+
+    public Priority getPriority() {
+        return priority;
+    }
+
+    public void setPriority(Priority priority) {
+        this.priority = priority;
     }
 
     public Event() {
