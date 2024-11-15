@@ -3,8 +3,10 @@ package me.omigo.remindme;
 import static me.omigo.remindme.R.id.recyclerView;
 
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -15,7 +17,8 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
 
     private RecyclerView view;
-
+    private AppDatabase appDatabase;
+    private EventDao eventDao;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,8 +32,18 @@ public class MainActivity extends AppCompatActivity {
         Event event2 = new Event("Fryzjer", "Forum Gdańsk", LocalDate.now(), LocalTime.now());
         Event event3 = new Event("Ruchanie dupy", "GOGO", LocalDate.now(), LocalTime.now());
 
-        RecyclerViewAdapter recyclerViewAdapter = new RecyclerViewAdapter(List.of(event1, event2, event3));
+        appDatabase = AppDatabase.getDatabase(getApplicationContext());
+        eventDao = appDatabase.eventDao();
+
+        RecyclerViewAdapter recyclerViewAdapter = new RecyclerViewAdapter(eventDao.getAllEvents());
 
         view.setAdapter(recyclerViewAdapter);
+
+        findViewById(R.id.button).setOnClickListener(v -> {
+            Log.println(Log.INFO, "INFO", "Button clicked");
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            EventDialogFragment eventDialogFragment = new EventDialogFragment();
+            eventDialogFragment.show(fragmentManager, "EventDialogFragment");
+        });
     }
 }
