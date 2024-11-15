@@ -1,15 +1,14 @@
 package me.omigo.remindme;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.room.util.StringUtil;
 
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Random;
@@ -35,7 +34,10 @@ public class MainActivity extends AppCompatActivity implements EventDialogFragme
         recyclerViewAdapter = new RecyclerViewAdapter(eventDao.getAllEvents());
 
         view.setAdapter(recyclerViewAdapter);
+        setUpButtons();
+    }
 
+    private void setUpButtons() {
         findViewById(R.id.button).setOnClickListener(v -> {
             FragmentManager fragmentManager = getSupportFragmentManager();
             EventDialogFragment eventDialogFragment = new EventDialogFragment();
@@ -63,7 +65,7 @@ public class MainActivity extends AppCompatActivity implements EventDialogFragme
                     .toString();
 
             LocalDate localDate = LocalDate.of(random.nextInt(2500) + 1, random.nextInt(12) + 1, random.nextInt(28) + 1);
-            LocalTime localTime = LocalTime.of(random.nextInt(24) + 1, random.nextInt(59) + 1, random.nextInt(59) + 1);
+            LocalTime localTime = LocalTime.of(random.nextInt(23) + 1, random.nextInt(59) + 1);
 
             Boolean isImportant = random.nextBoolean();
 
@@ -75,6 +77,11 @@ public class MainActivity extends AppCompatActivity implements EventDialogFragme
 
             eventDao.insert(event);
             onEventSaved(event);
+        });
+        findViewById(R.id.calendarTabItem).setOnClickListener(v -> {
+//            Intent intent = new Intent(this, CalendarActivity.class);
+//            intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+//            startActivity(intent);
         });
     }
 
