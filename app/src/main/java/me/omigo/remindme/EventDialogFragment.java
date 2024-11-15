@@ -18,7 +18,6 @@ import androidx.fragment.app.DialogFragment;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.Optional;
 
 public class EventDialogFragment extends DialogFragment {
 
@@ -101,7 +100,7 @@ public class EventDialogFragment extends DialogFragment {
             return;
         }
 
-        Event event = new Event(title, place, selectedDate, selectedTime, isImportantSwitch.isChecked() ? Priority.IMPORTANT : Priority.NORMAl);
+        Event event = new Event(title, place, selectedDate, selectedTime, isImportantSwitch.isChecked() ? Priority.IMPORTANT : Priority.NORMAL);
 
         appDatabase = AppDatabase.getDatabase(requireContext());
         eventDao = appDatabase.eventDao();

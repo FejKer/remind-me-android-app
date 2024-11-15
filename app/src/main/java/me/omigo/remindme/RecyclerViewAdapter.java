@@ -1,10 +1,8 @@
 package me.omigo.remindme;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Switch;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -54,7 +52,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         holder.textViewPlace.setText(event.getPlace());
         holder.textViewDate.setText(event.getDate().toString());
         holder.textViewTime.setText(event.getTime().toString());
-        holder.textViewIsImportant.setText(Optional.ofNullable(event.getPriority()).orElse(Priority.NORMAl).getLabel());
+        holder.textViewIsImportant.setText(Optional.ofNullable(event.getPriority()).orElse(Priority.NORMAL).getLabel());
     }
 
     public void updateEvents(Event newEvents) {

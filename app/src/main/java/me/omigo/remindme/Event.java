@@ -25,6 +25,18 @@ public class Event {
         this.priority = priority;
     }
 
+    @Override
+    public String toString() {
+        return "Event{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", place='" + place + '\'' +
+                ", date=" + date +
+                ", time=" + time +
+                ", priority=" + priority +
+                '}';
+    }
+
     public Priority getPriority() {
         return priority;
     }

@@ -4,6 +4,7 @@ import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.Query;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Dao
@@ -16,4 +17,7 @@ public interface EventDao {
 
     @Query("DELETE FROM events")
     void purgeDb();
+
+    @Query("SELECT * FROM events WHERE date =:now")
+    List<Event> getEventsByDate(Long now);
 }

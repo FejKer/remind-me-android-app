@@ -1,7 +1,7 @@
 package me.omigo.remindme;
 
 public enum Priority {
-    NORMAl("Zwykłe"), IMPORTANT("Ważne");
+    NORMAL("Zwykłe"), IMPORTANT("Ważne");
 
     private final String label;
 
