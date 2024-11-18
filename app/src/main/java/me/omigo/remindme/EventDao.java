@@ -12,12 +12,12 @@ public interface EventDao {
     @Insert
     void insert(Event event);
 
-    @Query("SELECT * FROM events")
+    @Query("SELECT * FROM events ORDER BY date ASC, time ASC")
     List<Event> getAllEvents();
 
     @Query("DELETE FROM events")
     void purgeDb();
 
-    @Query("SELECT * FROM events WHERE date =:now")
+    @Query("SELECT * FROM events WHERE date =:now ORDER BY date ASC, time ASC")
     List<Event> getEventsByDate(Long now);
 }
