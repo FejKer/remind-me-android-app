@@ -36,12 +36,13 @@ public class CalendarAdapter extends BaseAdapter {
 
     private void populateDates() {
         dates.clear();
-        // Start at the beginning of the month
+
+        // Clone current month calendar
         Calendar calendar = (Calendar) currentMonth.clone();
         calendar.set(Calendar.DAY_OF_MONTH, 1);
 
-        // Find the first day to display (including previous month dates)
-        int firstDayOfWeek = calendar.get(Calendar.DAY_OF_WEEK) - 1; // Sunday = 1
+        // Adjust for the first day of the week being Monday
+        int firstDayOfWeek = (calendar.get(Calendar.DAY_OF_WEEK) - Calendar.MONDAY + 7) % 7;
         calendar.add(Calendar.DAY_OF_MONTH, -firstDayOfWeek);
 
         // Populate the 6 weeks (6 rows * 7 days)
