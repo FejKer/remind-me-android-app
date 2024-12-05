@@ -20,7 +20,7 @@
         android:layout_width="0dp"
         android:layout_height="82dp"
         android:layout_marginEnd="32dp"
-        android:text="+"
+        android:text="Dodaj +"
         app:layout_constraintBottom_toBottomOf="@+id/recyclerView"
         app:layout_constraintEnd_toEndOf="parent" />
 

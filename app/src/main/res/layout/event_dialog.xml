@@ -1,60 +1,97 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
+<LinearLayout android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:padding="16dp"
+    android:elevation="4dp"
+    android:layout_margin="16dp"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <EditText
-        android:id="@+id/editTitle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Event Title" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Dodaj"
+            android:textStyle="bold"
+            android:textSize="20sp"
+            android:gravity="center"
+            android:paddingBottom="16dp" />
 
-    <EditText
-        android:id="@+id/editPlace"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Event Place" />
+        <EditText
+            android:id="@+id/editTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Tytuł (wymagane)"
+            android:padding="12dp"
+            android:layout_marginBottom="12dp" />
 
-    <TextView
-        android:id="@+id/dateTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Select Date"
-        android:padding="8dp"
-        android:textColor="@color/black" />
+        <EditText
+            android:id="@+id/editPlace"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Miejsce"
+            android:padding="12dp"
+            android:layout_marginBottom="12dp" />
 
-    <Button
-        android:id="@+id/datePickerButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Pick Date" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Data i czas"
+            android:textStyle="bold"
+            android:paddingBottom="8dp" />
 
-    <TextView
-        android:id="@+id/timeTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Select Time"
-        android:padding="8dp"
-        android:textColor="@color/black" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="12dp">
 
-    <Button
-        android:id="@+id/timePickerButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Pick Time" />
+            <Button
+                android:id="@+id/datePickerButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Wybierz datę" />
 
-    <Switch
-        android:id="@+id/isImportant"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Important mode?" />
+            <TextView
+                android:id="@+id/dateTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="Brak daty (wymagana)" />
+        </LinearLayout>
 
-    <Button
-        android:id="@+id/saveButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Save" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="12dp">
 
-</LinearLayout>
+            <Button
+                android:id="@+id/timePickerButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Wybierz godzinę" />
+
+            <TextView
+                android:id="@+id/timeTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="Brak godziny (całodniowe)" />
+        </LinearLayout>
+
+        <Switch
+            android:id="@+id/isImportant"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Wydarzenie ważne?"
+            android:layout_marginBottom="16dp" />
+
+        <Button
+            android:id="@+id/saveButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Zapisz" />
+    </LinearLayout>

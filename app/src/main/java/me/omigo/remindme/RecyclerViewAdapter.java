@@ -8,6 +8,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -49,9 +50,11 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Event event = events.get(position);
         holder.textViewTitle.setText(event.getTitle());
-        holder.textViewPlace.setText(event.getPlace());
+        String place = Optional.ofNullable(event.getPlace()).orElse("");
+        holder.textViewPlace.setText(place);
         holder.textViewDate.setText(event.getDate().toString());
-        holder.textViewTime.setText(event.getTime().toString());
+        String time = Optional.ofNullable(event.getTime()).map(x -> x.toString()).orElse("Całodniowe");
+        holder.textViewTime.setText(time);
         holder.textViewIsImportant.setText(Optional.ofNullable(event.getPriority()).orElse(Priority.NORMAL).getLabel());
     }
 

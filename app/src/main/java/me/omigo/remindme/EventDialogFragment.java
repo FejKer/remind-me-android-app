@@ -95,8 +95,8 @@ public class EventDialogFragment extends DialogFragment {
         String title = editTitle.getText().toString();
         String place = editPlace.getText().toString();
 
-        if (title.isEmpty() || place.isEmpty() || selectedDate == null || selectedTime == null) {
-            Toast.makeText(requireContext(), "Please fill out all fields", Toast.LENGTH_SHORT).show();
+        if (title.isEmpty() || selectedDate == null) {
+            Toast.makeText(requireContext(), "Wypełnij wymagany tytuł oraz datę", Toast.LENGTH_LONG).show();
             return;
         }
 
@@ -106,7 +106,7 @@ public class EventDialogFragment extends DialogFragment {
         eventDao = appDatabase.eventDao();
         eventDao.insert(event);
 
-        Toast.makeText(requireContext(), "Event saved!", Toast.LENGTH_SHORT).show();
+        Toast.makeText(requireContext(), "Zapisano", Toast.LENGTH_SHORT).show();
 
         if (listener != null) {
             listener.onEventSaved(event); // Notify listener about the new event

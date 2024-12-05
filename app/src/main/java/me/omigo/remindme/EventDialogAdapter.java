@@ -34,7 +34,7 @@ public class EventDialogAdapter extends RecyclerView.Adapter<EventDialogAdapter.
         DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
         String formattedTime = event.getTime() != null
                 ? event.getTime().format(timeFormatter)
-                : "No Time";
+                : "Całodniowe";
 
         // Set event details
         holder.titleText.setText(event.getTitle());
