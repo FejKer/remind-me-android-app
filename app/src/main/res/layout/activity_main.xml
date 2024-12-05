@@ -26,14 +26,12 @@
             android:id="@+id/listTabItem"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:icon="@drawable/format_list_bulleted"
-            android:text="Lista" />
+            android:icon="@drawable/format_list_bulleted" />
 
         <com.google.android.material.tabs.TabItem
             android:id="@+id/calendarTabItem"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:icon="@drawable/calendar_month"
-            android:text="Kalendarz" />
+            android:icon="@drawable/calendar_month" />
     </com.google.android.material.tabs.TabLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
