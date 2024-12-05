@@ -10,8 +10,10 @@
         android:id="@+id/linearLayout"
         android:layout_width="1276dp"
         android:layout_height="36dp"
+        android:layout_marginTop="32dp"
         android:gravity="center"
         android:orientation="horizontal"
+        app:layout_constraintBottom_toTopOf="@+id/weekDaysRow"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -20,7 +22,7 @@
             android:id="@+id/prevMonthButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Prev" />
+            android:text="Poprzedni" />
 
         <TextView
             android:id="@+id/monthYearText"
@@ -36,7 +38,7 @@
             android:id="@+id/nextMonthButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Next" />
+            android:text="Następny" />
     </LinearLayout>
 
     <!-- Weekday labels -->
@@ -45,6 +47,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="128dp"
+        android:layout_marginTop="32dp"
         android:layout_marginEnd="128dp"
         android:gravity="center"
         android:orientation="horizontal"
@@ -125,6 +128,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="128dp"
+        android:layout_marginTop="32dp"
         android:layout_marginEnd="128dp"
         android:gravity="center"
         android:horizontalSpacing="2dp"
@@ -135,7 +139,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/weekDaysRow" />
 
-    <!-- Additional RecyclerView -->
+    <!-- Additional RecyclerView
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="0dp"
@@ -143,5 +147,5 @@
         app:layout_constraintTop_toBottomOf="@id/calendarGridView"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent" />
+        app:layout_constraintBottom_toBottomOf="parent" /> -->
 </androidx.constraintlayout.widget.ConstraintLayout>

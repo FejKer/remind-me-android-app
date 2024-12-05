@@ -1,7 +1,9 @@
 package me.omigo.remindme;
 
+import android.app.AlertDialog;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,10 +23,10 @@ import java.util.Calendar;
 import java.util.List;
 
 public class CalendarFragment extends Fragment {
-    private RecyclerView recyclerView;
+    //private RecyclerView recyclerView;
     private AppDatabase appDatabase;
     private EventDao eventDao;
-    private RecyclerViewAdapter recyclerViewAdapter;
+    //private RecyclerViewAdapter recyclerViewAdapter;
     //private CustomCalendarView calendarView;
 
     private Calendar currentMonth;
@@ -56,19 +58,18 @@ public class CalendarFragment extends Fragment {
 
         // Set up the adapter
         adapter = new CalendarAdapter(requireContext(), currentMonth, markedDates, date -> {
-            updateEvents(date.get(Calendar.YEAR), date.get(Calendar.MONTH) + 1, date.get(Calendar.DAY_OF_MONTH));
-            System.out.println("Clicked date: " + date.get(Calendar.DAY_OF_MONTH) + "/" +
-                    (date.get(Calendar.MONTH) + 1) + "/" + date.get(Calendar.YEAR));
+            showEventsDialog(date);
+            //updateEvents(date.get(Calendar.YEAR), date.get(Calendar.MONTH) + 1, date.get(Calendar.DAY_OF_MONTH));
         });
         calendarGridView.setAdapter(adapter);
 
         //calendarView = view.findViewById(R.id.calendarView);
 
-        recyclerView = view.findViewById(R.id.recyclerView);
-        recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
+//        recyclerView = view.findViewById(R.id.recyclerView);
+//        recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
 
-        recyclerViewAdapter = new RecyclerViewAdapter(eventDao.getEventsByDate(LocalDate.now().toEpochDay()));
-        recyclerView.setAdapter(recyclerViewAdapter);
+//        recyclerViewAdapter = new RecyclerViewAdapter(eventDao.getEventsByDate(LocalDate.now().toEpochDay()));
+//        recyclerView.setAdapter(recyclerViewAdapter);
 
         setUpButtons();
         return view;
@@ -106,14 +107,14 @@ public class CalendarFragment extends Fragment {
         });
     }
 
-    private void updateEvents(Integer year, Integer month, Integer dayOfMonth) {
-        recyclerViewAdapter.removeEvents();
-        Long now = LocalDate.of(year, month, dayOfMonth).toEpochDay();
-        List<Event> events = eventDao.getEventsByDate(now);
-        for (var event : events) {
-            recyclerViewAdapter.updateEvents(event);
-        }
-    }
+//    private void updateEvents(Integer year, Integer month, Integer dayOfMonth) {
+//        recyclerViewAdapter.removeEvents();
+//        Long now = LocalDate.of(year, month, dayOfMonth).toEpochDay();
+//        List<Event> events = eventDao.getEventsByDate(now);
+//        for (var event : events) {
+//            recyclerViewAdapter.updateEvents(event);
+//        }
+//    }
 
     private void updateMonthYearText(TextView monthYearText) {
         monthYearText.setText(currentMonth.getDisplayName(Calendar.MONTH, Calendar.LONG, getResources().getConfiguration().locale)
@@ -131,5 +132,55 @@ public class CalendarFragment extends Fragment {
         calendar.set(Calendar.MONTH, month);
         calendar.set(Calendar.DAY_OF_MONTH, day);
         return calendar;
+    }
+
+    private void showEventsDialog(Calendar selectedDate) {
+        // Convert Calendar to LocalDate
+        LocalDate date = LocalDate.of(
+                selectedDate.get(Calendar.YEAR),
+                selectedDate.get(Calendar.MONTH) + 1,
+                selectedDate.get(Calendar.DAY_OF_MONTH)
+        );
+
+        // Get events for the selected date
+        List<Event> events = eventDao.getEventsByDate(date.toEpochDay());
+
+        // If no events, show a toast
+        if (events.isEmpty()) {
+            Toast.makeText(requireContext(), "Brak wydarzeń tego dnia", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        // Create and configure the dialog
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext(), R.style.CustomDialogTheme);
+        LayoutInflater inflater = getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.event_calendar_dialog, null);
+
+        // Set up RecyclerView in the dialog
+        RecyclerView eventsRecyclerView = dialogView.findViewById(R.id.eventsRecyclerView);
+        eventsRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
+
+        EventDialogAdapter dialogAdapter = new EventDialogAdapter(events);
+        eventsRecyclerView.setAdapter(dialogAdapter);
+
+        // Set up dialog title
+        TextView dialogTitleText = dialogView.findViewById(R.id.dialogTitleText);
+        dialogTitleText.setText(String.format("Wydarzenia %d.%d.%d",
+                selectedDate.get(Calendar.DAY_OF_MONTH),
+                selectedDate.get(Calendar.MONTH) + 1,
+                selectedDate.get(Calendar.YEAR)
+        ));
+
+        // Build and show the dialog
+        builder.setView(dialogView)
+                .setNegativeButton("Zamknij", (dialog, which) -> dialog.dismiss());
+
+        AlertDialog dialog = builder.create();
+
+        // Make dialog fill width and center
+        dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        dialog.getWindow().setGravity(Gravity.CENTER);
+
+        dialog.show();
     }
 }
