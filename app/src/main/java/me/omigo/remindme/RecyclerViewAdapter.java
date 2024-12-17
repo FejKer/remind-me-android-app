@@ -3,6 +3,7 @@ package me.omigo.remindme;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -11,9 +12,18 @@ import java.util.Optional;
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder> {
     private List<Event> events;
+    private OnEventEditListener editListener;
+
+    public interface OnEventEditListener {
+        void onEventEdit(Event event);
+    }
 
     public RecyclerViewAdapter(List<Event> events) {
         this.events = events;
+    }
+
+    public void setOnEventEditListener(OnEventEditListener listener) {
+        this.editListener = listener;
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -22,6 +32,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         public TextView textViewDate;
         public TextView textViewTime;
         public TextView textViewIsImportant;
+        public ImageButton editButton;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -30,6 +41,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             textViewDate = itemView.findViewById(R.id.textViewDate);
             textViewTime = itemView.findViewById(R.id.textViewTime);
             textViewIsImportant = itemView.findViewById(R.id.textViewIsImportant);
+            editButton = itemView.findViewById(R.id.editButton);
         }
     }
 
@@ -58,7 +70,12 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                         .getLabel()
         );
 
-        // Optional: adjust card appearance based on priority
+        holder.editButton.setOnClickListener(v -> {
+            if (editListener != null) {
+                editListener.onEventEdit(event);
+            }
+        });
+
         holder.itemView.setAlpha(
                 event.getPriority() == Priority.IMPORTANT ? 1.0f : 0.85f
         );

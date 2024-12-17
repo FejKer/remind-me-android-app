@@ -32,6 +32,12 @@ public class ListFragment extends Fragment implements EventDialogFragment.EventD
         eventDao = appDatabase.eventDao();
 
         recyclerViewAdapter = new RecyclerViewAdapter(eventDao.getAllEvents());
+        recyclerViewAdapter.setOnEventEditListener(event -> {
+            // Handle edit event here
+            EventDialogFragment dialogFragment = new EventDialogFragment();
+            // Set up dialog with event data
+            dialogFragment.show(getParentFragmentManager(), "EventDialogFragment");
+        });
         recyclerView.setAdapter(recyclerViewAdapter);
 
         setUpButtons(view);

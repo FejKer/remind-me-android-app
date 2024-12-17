@@ -30,7 +30,7 @@ public class CalendarFragment extends Fragment {
     //private CustomCalendarView calendarView;
 
     private Calendar currentMonth;
-    private List<Calendar> markedDates;
+    private List<CalendarAndIsImportantWrapper> markedDates;
     private Button prevMonthButton;
     private Button nextMonthButton;
     private CalendarAdapter adapter;
@@ -75,12 +75,13 @@ public class CalendarFragment extends Fragment {
         return view;
     }
 
-    private List<Calendar> getDates() {
+    private List<CalendarAndIsImportantWrapper> getDates() {
         List<Event> events = eventDao.getAllEvents();
-        List<Calendar> calendars = new ArrayList<>();
+        List<CalendarAndIsImportantWrapper> calendars = new ArrayList<>();
         for (var event : events) {
             Calendar calendar = getCalendarDate(event.getDate().getYear(), event.getDate().getMonthValue() -1, event.getDate().getDayOfMonth());
-            calendars.add(calendar);
+            Boolean isImportant = event.getPriority() == Priority.IMPORTANT;
+            calendars.add(new CalendarAndIsImportantWrapper(calendar, isImportant));
         }
         return calendars;
     }

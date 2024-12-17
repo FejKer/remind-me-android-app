@@ -1,51 +1,42 @@
 package me.omigo.remindme;
 
-
 import android.content.Context;
-import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
-
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
 public class CalendarAdapter extends BaseAdapter {
-
     private final Context context;
     private final List<Calendar> dates;
     private final Calendar currentMonth;
-    private final List<Calendar> markedDates;
+    private final List<CalendarAndIsImportantWrapper> markedDates;
     private Calendar selectedDate;
-
     final OnDateClickListener dateClickListener;
 
-    public CalendarAdapter(Context context, Calendar currentMonth, List<Calendar> markedDates, OnDateClickListener listener) {
+    public CalendarAdapter(Context context, Calendar currentMonth, List<CalendarAndIsImportantWrapper> markedDates, OnDateClickListener listener) {
         this.context = context;
         this.currentMonth = currentMonth;
         this.markedDates = markedDates;
         this.dateClickListener = listener;
         this.selectedDate = null;
-
         dates = new ArrayList<>();
         populateDates();
     }
 
     private void populateDates() {
         dates.clear();
-
-        // Clone current month calendar
         Calendar calendar = (Calendar) currentMonth.clone();
         calendar.set(Calendar.DAY_OF_MONTH, 1);
-
-        // Adjust for the first day of the week being Monday
         int firstDayOfWeek = (calendar.get(Calendar.DAY_OF_WEEK) - Calendar.MONDAY + 7) % 7;
         calendar.add(Calendar.DAY_OF_MONTH, -firstDayOfWeek);
 
-        // Populate the 6 weeks (6 rows * 7 days)
         for (int i = 0; i < 42; i++) {
             dates.add((Calendar) calendar.clone());
             calendar.add(Calendar.DAY_OF_MONTH, 1);
@@ -70,42 +61,50 @@ public class CalendarAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         if (convertView == null) {
-            convertView = LayoutInflater.from(context).inflate(android.R.layout.simple_list_item_1, parent, false);
+            convertView = LayoutInflater.from(context).inflate(R.layout.calendar_day_cell, parent, false);
         }
 
-        TextView dayText = (TextView) convertView;
+        TextView dayText = convertView.findViewById(R.id.dayText);
+        View eventIndicator = convertView.findViewById(R.id.eventIndicator);
+        View eventIndicatorNotImportant = convertView.findViewById(R.id.eventIndicatorNotImportant);
         Calendar date = dates.get(position);
 
-        // Set day number
         dayText.setText(String.valueOf(date.get(Calendar.DAY_OF_MONTH)));
 
-        // Default style
-        dayText.setBackgroundColor(Color.TRANSPARENT);
-        dayText.setTextColor(Color.BLACK);
+        // Reset styles
+        dayText.setAlpha(1.0f);
+        eventIndicator.setVisibility(View.GONE);
+        convertView.setBackgroundResource(android.R.color.transparent);
 
-        // Highlight current month dates
+        // Style dates outside current month
         if (date.get(Calendar.MONTH) != currentMonth.get(Calendar.MONTH)) {
-            dayText.setTextColor(Color.GRAY); // Outside current month
+            dayText.setAlpha(0.3f);
         }
 
-        // Highlight marked dates
-        for (Calendar markedDate : markedDates) {
-            if (isSameDate(date, markedDate)) {
-                dayText.setBackgroundColor(Color.RED); // Highlight background
-                dayText.setTextColor(Color.WHITE);     // Change text color
+        // Show indicator for marked dates
+        for (var markedDate : markedDates) {
+            if (isSameDate(date, markedDate.getCalendar())) {
+                Animation pulseAnimation = AnimationUtils.loadAnimation(context, R.anim.pulse);
+                if (markedDate.getImportant()) {
+                    eventIndicator.setVisibility(View.VISIBLE);
+                    eventIndicator.startAnimation(pulseAnimation);
+                    eventIndicatorNotImportant.setVisibility(View.GONE);
+                    break;
+                } else {
+                    eventIndicatorNotImportant.setVisibility(View.VISIBLE);
+                    eventIndicatorNotImportant.startAnimation(pulseAnimation);
+                }
             }
         }
 
-        // Highlight selected date
+        // Handle selected date
         if (selectedDate != null && isSameDate(date, selectedDate)) {
-            dayText.setBackgroundColor(Color.BLUE); // Selected date background
-            dayText.setTextColor(Color.WHITE);      // Selected date text color
+            convertView.setBackgroundResource(R.drawable.selected_day_background);
         }
 
-        // Handle click events
-        dayText.setOnClickListener(v -> {
+        convertView.setOnClickListener(v -> {
             selectedDate = date;
-            notifyDataSetChanged(); // Refresh the view
+            notifyDataSetChanged();
             if (dateClickListener != null) {
                 dateClickListener.onDateClick(date);
             }
@@ -120,7 +119,6 @@ public class CalendarAdapter extends BaseAdapter {
                 date1.get(Calendar.DAY_OF_MONTH) == date2.get(Calendar.DAY_OF_MONTH);
     }
 
-    // Listener interface for date clicks
     public interface OnDateClickListener {
         void onDateClick(Calendar date);
     }
