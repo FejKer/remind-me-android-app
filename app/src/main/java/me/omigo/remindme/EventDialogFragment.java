@@ -28,14 +28,20 @@ public class EventDialogFragment extends DialogFragment {
     private SwitchMaterial isImportantSwitch;
     private LocalDate selectedDate;
     private LocalTime selectedTime;
+    private Event eventToEdit;
+    private boolean isEditing = false;
 
     private AppDatabase appDatabase;
     private EventDao eventDao;
-
     private EventDialogListener listener;
 
     public interface EventDialogListener {
         void onEventSaved(Event event);
+    }
+
+    public void setEventToEdit(Event event) {
+        this.eventToEdit = event;
+        this.isEditing = true;
     }
 
     public void setEventDialogListener(EventDialogListener listener) {
@@ -51,7 +57,19 @@ public class EventDialogFragment extends DialogFragment {
         editPlace = view.findViewById(R.id.editPlace);
         dateTextView = view.findViewById(R.id.dateTextView);
         timeTextView = view.findViewById(R.id.timeTextView);
-        isImportantSwitch = ((SwitchMaterial) view.findViewById(R.id.isImportant));
+        isImportantSwitch = view.findViewById(R.id.isImportant);
+
+        if (isEditing && eventToEdit != null) {
+            editTitle.setText(eventToEdit.getTitle());
+            editPlace.setText(eventToEdit.getPlace());
+            selectedDate = eventToEdit.getDate();
+            selectedTime = eventToEdit.getTime();
+            dateTextView.setText(selectedDate.toString());
+            if (selectedTime != null) {
+                timeTextView.setText(selectedTime.toString());
+            }
+            isImportantSwitch.setChecked(eventToEdit.getPriority() == Priority.IMPORTANT);
+        }
 
         Button datePickerButton = view.findViewById(R.id.datePickerButton);
         datePickerButton.setOnClickListener(v -> showDatePicker());
@@ -63,6 +81,42 @@ public class EventDialogFragment extends DialogFragment {
         saveButton.setOnClickListener(v -> saveEvent());
 
         return view;
+    }
+
+    private void saveEvent() {
+        String title = editTitle.getText().toString();
+        String place = editPlace.getText().toString();
+
+        if (title.isEmpty() || selectedDate == null) {
+            Toast.makeText(requireContext(), "Wypełnij wymagany tytuł oraz datę", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        appDatabase = AppDatabase.getDatabase(requireContext());
+        eventDao = appDatabase.eventDao();
+
+        Event event;
+        if (isEditing) {
+            event = eventToEdit;
+            event.setTitle(title);
+            event.setPlace(place);
+            event.setDate(selectedDate);
+            event.setTime(selectedTime);
+            event.setPriority(isImportantSwitch.isChecked() ? Priority.IMPORTANT : Priority.NORMAL);
+            eventDao.update(event);
+        } else {
+            event = new Event(title, place, selectedDate, selectedTime,
+                    isImportantSwitch.isChecked() ? Priority.IMPORTANT : Priority.NORMAL);
+            eventDao.insert(event);
+        }
+
+        Toast.makeText(requireContext(), "Zapisano", Toast.LENGTH_SHORT).show();
+
+        if (listener != null) {
+            listener.onEventSaved(event);
+        }
+
+        dismiss();
     }
 
     private void showDatePicker() {
@@ -91,29 +145,5 @@ public class EventDialogFragment extends DialogFragment {
                 true
         );
         timePickerDialog.show();
-    }
-
-    private void saveEvent() {
-        String title = editTitle.getText().toString();
-        String place = editPlace.getText().toString();
-
-        if (title.isEmpty() || selectedDate == null) {
-            Toast.makeText(requireContext(), "Wypełnij wymagany tytuł oraz datę", Toast.LENGTH_LONG).show();
-            return;
-        }
-
-        Event event = new Event(title, place, selectedDate, selectedTime, isImportantSwitch.isChecked() ? Priority.IMPORTANT : Priority.NORMAL);
-
-        appDatabase = AppDatabase.getDatabase(requireContext());
-        eventDao = appDatabase.eventDao();
-        eventDao.insert(event);
-
-        Toast.makeText(requireContext(), "Zapisano", Toast.LENGTH_SHORT).show();
-
-        if (listener != null) {
-            listener.onEventSaved(event); // Notify listener about the new event
-        }
-
-        dismiss();
     }
 }

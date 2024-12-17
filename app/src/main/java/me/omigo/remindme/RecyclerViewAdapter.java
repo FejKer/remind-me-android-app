@@ -81,10 +81,18 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         );
     }
 
-    public void updateEvents(Event newEvents) {
-        Integer index = this.events.size();
-        this.events.add(newEvents);
-        notifyItemInserted(index);  // Changed from notifyItemChanged
+    public void updateEvents(Event newEvent) {
+        int newEventId = newEvent.getId();
+        Optional<Event> optionalEvent = this.events.stream().filter(e -> e.getId() == newEventId).findFirst();
+        if (optionalEvent.isPresent()) {
+            int index = this.events.indexOf(optionalEvent.get());
+            this.events.set(index, newEvent);
+            notifyItemChanged(index);
+        } else {
+            int index = this.events.size();
+            this.events.add(newEvent);
+            notifyItemInserted(index);  // Changed from notifyItemChanged
+        }
     }
 
     public void removeEvents() {

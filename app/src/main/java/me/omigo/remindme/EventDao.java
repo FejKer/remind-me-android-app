@@ -3,6 +3,7 @@ package me.omigo.remindme;
 import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.Query;
+import androidx.room.Update;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -20,4 +21,7 @@ public interface EventDao {
 
     @Query("SELECT * FROM events WHERE date =:now ORDER BY date ASC, time ASC")
     List<Event> getEventsByDate(Long now);
+
+    @Update
+    void update(Event event);
 }
