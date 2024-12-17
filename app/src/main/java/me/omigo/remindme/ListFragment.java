@@ -40,7 +40,7 @@ public class ListFragment extends Fragment implements EventDialogFragment.EventD
     }
 
     private void setUpButtons(View view) {
-        view.findViewById(R.id.button).setOnClickListener(v -> {
+        view.findViewById(R.id.fabAdd).setOnClickListener(v -> {
             FragmentManager fragmentManager = getParentFragmentManager();
             EventDialogFragment eventDialogFragment = new EventDialogFragment();
             eventDialogFragment.setEventDialogListener(this);

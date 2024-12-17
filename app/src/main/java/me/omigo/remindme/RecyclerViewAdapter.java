@@ -4,16 +4,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
-import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder> {
-
     private List<Event> events;
 
     public RecyclerViewAdapter(List<Event> events) {
@@ -37,15 +33,14 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         }
     }
 
-    // Inflate item layout and create ViewHolder
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.text_view, parent, false);
+        View view = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.text_view, parent, false);
         return new ViewHolder(view);
     }
 
-    // Bind data to each item view
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Event event = events.get(position);
@@ -53,15 +48,26 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         String place = Optional.ofNullable(event.getPlace()).orElse("");
         holder.textViewPlace.setText(place);
         holder.textViewDate.setText(event.getDate().toString());
-        String time = Optional.ofNullable(event.getTime()).map(x -> x.toString()).orElse("Całodniowe");
+        String time = Optional.ofNullable(event.getTime())
+                .map(x -> x.toString())
+                .orElse("Całodniowe");
         holder.textViewTime.setText(time);
-        holder.textViewIsImportant.setText(Optional.ofNullable(event.getPriority()).orElse(Priority.NORMAL).getLabel());
+        holder.textViewIsImportant.setText(
+                Optional.ofNullable(event.getPriority())
+                        .orElse(Priority.NORMAL)
+                        .getLabel()
+        );
+
+        // Optional: adjust card appearance based on priority
+        holder.itemView.setAlpha(
+                event.getPriority() == Priority.IMPORTANT ? 1.0f : 0.85f
+        );
     }
 
     public void updateEvents(Event newEvents) {
         Integer index = this.events.size();
         this.events.add(newEvents);
-        notifyItemChanged(index);
+        notifyItemInserted(index);  // Changed from notifyItemChanged
     }
 
     public void removeEvents() {
@@ -70,7 +76,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         notifyItemRangeRemoved(0, size);
     }
 
-    // Return the total count of items
     @Override
     public int getItemCount() {
         return events.size();
