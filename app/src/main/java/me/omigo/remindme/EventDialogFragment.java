@@ -16,6 +16,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
+import com.google.android.material.switchmaterial.SwitchMaterial;
+
 import java.time.LocalDate;
 import java.time.LocalTime;
 
@@ -23,7 +25,7 @@ public class EventDialogFragment extends DialogFragment {
 
     private EditText editTitle, editPlace;
     private TextView dateTextView, timeTextView;
-    private Switch isImportantSwitch;
+    private SwitchMaterial isImportantSwitch;
     private LocalDate selectedDate;
     private LocalTime selectedTime;
 
@@ -49,7 +51,7 @@ public class EventDialogFragment extends DialogFragment {
         editPlace = view.findViewById(R.id.editPlace);
         dateTextView = view.findViewById(R.id.dateTextView);
         timeTextView = view.findViewById(R.id.timeTextView);
-        isImportantSwitch = ((Switch) view.findViewById(R.id.isImportant));
+        isImportantSwitch = ((SwitchMaterial) view.findViewById(R.id.isImportant));
 
         Button datePickerButton = view.findViewById(R.id.datePickerButton);
         datePickerButton.setOnClickListener(v -> showDatePicker());
