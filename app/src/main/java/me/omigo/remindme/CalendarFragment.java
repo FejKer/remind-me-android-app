@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-public class CalendarFragment extends Fragment {
+public class CalendarFragment extends Fragment implements EventDialogFragment.EventDialogListener {
     //private RecyclerView recyclerView;
     private AppDatabase appDatabase;
     private EventDao eventDao;
@@ -36,6 +36,7 @@ public class CalendarFragment extends Fragment {
     private CalendarAdapter adapter;
     private GridView calendarGridView;
     private TextView monthYearText;
+    private RecyclerView eventsRecyclerView;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -79,7 +80,7 @@ public class CalendarFragment extends Fragment {
         List<Event> events = eventDao.getAllEvents();
         List<CalendarAndIsImportantWrapper> calendars = new ArrayList<>();
         for (var event : events) {
-            Calendar calendar = getCalendarDate(event.getDate().getYear(), event.getDate().getMonthValue() -1, event.getDate().getDayOfMonth());
+            Calendar calendar = getCalendarDate(event.getDate().getYear(), event.getDate().getMonthValue() - 1, event.getDate().getDayOfMonth());
             Boolean isImportant = event.getPriority() == Priority.IMPORTANT;
             calendars.add(new CalendarAndIsImportantWrapper(calendar, isImportant));
         }
@@ -158,10 +159,16 @@ public class CalendarFragment extends Fragment {
         View dialogView = inflater.inflate(R.layout.event_calendar_dialog, null);
 
         // Set up RecyclerView in the dialog
-        RecyclerView eventsRecyclerView = dialogView.findViewById(R.id.eventsRecyclerView);
+        eventsRecyclerView = dialogView.findViewById(R.id.eventsRecyclerView);
         eventsRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
 
         EventDialogAdapter dialogAdapter = new EventDialogAdapter(events);
+        dialogAdapter.setOnEventEditListener(event -> {
+            EventDialogFragment dialogFragment = new EventDialogFragment();
+            dialogFragment.setEventToEdit(event);
+            dialogFragment.setEventDialogListener(this);
+            dialogFragment.show(getParentFragmentManager(), "EventDialogFragment");
+        });
         eventsRecyclerView.setAdapter(dialogAdapter);
 
         // Set up dialog title
@@ -183,5 +190,17 @@ public class CalendarFragment extends Fragment {
         dialog.getWindow().setGravity(Gravity.CENTER);
 
         dialog.show();
+    }
+
+    @Override
+    public void onEventSaved(Event event) {
+        if (eventsRecyclerView != null && eventsRecyclerView.getAdapter() != null) {
+            ((EventDialogAdapter) eventsRecyclerView.getAdapter()).updateEvents(event);
+        }
+
+        markedDates = getDates();
+
+        adapter = new CalendarAdapter(requireContext(), currentMonth, markedDates, adapter.dateClickListener);
+        calendarGridView.setAdapter(adapter);
     }
 }
