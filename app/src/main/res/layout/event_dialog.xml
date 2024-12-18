@@ -80,13 +80,6 @@
                         android:orientation="vertical"
                         android:layout_marginStart="8dp">
 
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="Data i czas"
-                            android:textAppearance="?attr/textAppearanceSubtitle1"
-                            android:layout_marginBottom="8dp" />
-
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/datePickerButton"
                             style="@style/Widget.MaterialComponents.Button.OutlinedButton"
@@ -116,6 +109,130 @@
                             android:gravity="center"
                             android:text="Brak godziny - całodniowe" />
                     </LinearLayout>
+                </LinearLayout>
+
+                <!-- Recurring Section -->
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/isRecurring"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Wydarzenie cykliczne?"
+                    android:layout_marginTop="16dp" />
+
+                <LinearLayout
+                    android:id="@+id/recurringOptionsLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <RadioGroup
+                        android:id="@+id/recurringTypeGroup"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp">
+
+                        <RadioButton
+                            android:id="@+id/weeklyRecurring"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Powtarzaj w wybrane dni tygodnia" />
+
+                        <LinearLayout
+                            android:id="@+id/weekDaysLayout"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:layout_marginStart="32dp"
+                            android:visibility="gone">
+
+                            <CheckBox
+                                android:id="@+id/mondayCheck"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Poniedziałek" />
+
+                            <CheckBox
+                                android:id="@+id/tuesdayCheck"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Wtorek" />
+
+                            <CheckBox
+                                android:id="@+id/wednesdayCheck"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Środa" />
+
+                            <CheckBox
+                                android:id="@+id/thursdayCheck"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Czwartek" />
+
+                            <CheckBox
+                                android:id="@+id/fridayCheck"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Piątek" />
+
+                            <CheckBox
+                                android:id="@+id/saturdayCheck"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Sobota" />
+
+                            <CheckBox
+                                android:id="@+id/sundayCheck"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Niedziela" />
+                        </LinearLayout>
+
+                        <RadioButton
+                            android:id="@+id/customRecurring"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Własny okres powtarzania" />
+
+                        <LinearLayout
+                            android:id="@+id/customRecurringLayout"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:layout_marginStart="32dp"
+                            android:visibility="gone">
+
+                            <com.google.android.material.textfield.TextInputLayout
+                                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:layout_marginEnd="8dp">
+
+                                <com.google.android.material.textfield.TextInputEditText
+                                    android:id="@+id/recurringInterval"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:inputType="number"
+                                    android:hint="Interwał" />
+                            </com.google.android.material.textfield.TextInputLayout>
+
+                            <com.google.android.material.textfield.TextInputLayout
+                                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1">
+
+                                <AutoCompleteTextView
+                                    android:id="@+id/recurringUnit"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:inputType="none"
+                                    android:hint="Jednostka" />
+                            </com.google.android.material.textfield.TextInputLayout>
+                        </LinearLayout>
+                    </RadioGroup>
                 </LinearLayout>
 
                 <com.google.android.material.switchmaterial.SwitchMaterial

@@ -1,5 +1,6 @@
 package me.omigo.remindme;
 
+import androidx.room.Embedded;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
@@ -17,12 +18,28 @@ public class Event {
     private LocalTime time;
     private Priority priority;
 
+    @Embedded
+    private RecurrencePattern recurrencePattern;
+
+    private Long parentEventId; // For recurring event instances
+
     public Event(String title, String place, LocalDate date, LocalTime time, Priority priority) {
         this.title = title;
         this.place = place;
         this.date = date;
         this.time = time;
         this.priority = priority;
+    }
+
+    public Event(long id, String title, String place, LocalDate date, LocalTime time, Priority priority, RecurrencePattern recurrencePattern, Long parentEventId) {
+        this.id = id;
+        this.title = title;
+        this.place = place;
+        this.date = date;
+        this.time = time;
+        this.priority = priority;
+        this.recurrencePattern = recurrencePattern;
+        this.parentEventId = parentEventId;
     }
 
     @Override
@@ -87,5 +104,21 @@ public class Event {
 
     public void setTime(LocalTime time) {
         this.time = time;
+    }
+
+    public RecurrencePattern getRecurrencePattern() {
+        return recurrencePattern;
+    }
+
+    public void setRecurrencePattern(RecurrencePattern recurrencePattern) {
+        this.recurrencePattern = recurrencePattern;
+    }
+
+    public Long getParentEventId() {
+        return parentEventId;
+    }
+
+    public void setParentEventId(Long parentEventId) {
+        this.parentEventId = parentEventId;
     }
 }

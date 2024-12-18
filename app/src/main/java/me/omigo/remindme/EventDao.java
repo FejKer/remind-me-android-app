@@ -24,4 +24,10 @@ public interface EventDao {
 
     @Update
     void update(Event event);
+
+    @Query("SELECT * FROM events WHERE recurrenceEnabled IS TRUE")
+    List<Event> getRecurringEvents();
+
+    @Query("SELECT * FROM events WHERE parentEventId = :parentId")
+    List<Event> getRecurringInstances(long parentId);
 }
