@@ -7,6 +7,9 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import java.time.LocalTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -82,17 +85,44 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     }
 
     public void updateEvents(Event newEvent) {
-        int newEventId = newEvent.getId();
-        Optional<Event> optionalEvent = this.events.stream().filter(e -> e.getId() == newEventId).findFirst();
+        long newEventId = newEvent.getId();
+        Optional<Event> optionalEvent = this.events.stream()
+                .filter(e -> e.getId() == newEventId)
+                .findFirst();
+
         if (optionalEvent.isPresent()) {
-            int index = this.events.indexOf(optionalEvent.get());
-            this.events.set(index, newEvent);
-            notifyItemChanged(index);
-        } else {
-            int index = this.events.size();
-            this.events.add(newEvent);
-            notifyItemInserted(index);  // Changed from notifyItemChanged
+            // Update existing event
+            int oldIndex = this.events.indexOf(optionalEvent.get());
+            this.events.remove(oldIndex);
+            notifyItemRemoved(oldIndex);
         }
+
+        // Find correct position to insert based on sorting criteria
+        int insertIndex = findSortedPosition(newEvent);
+        this.events.add(insertIndex, newEvent);
+        notifyItemInserted(insertIndex);
+    }
+
+    private int findSortedPosition(Event newEvent) {
+        int searchResult = Collections.binarySearch(this.events, newEvent, (event1, event2) -> {
+            // First compare by date
+            int dateComparison = event1.getDate().compareTo(event2.getDate());
+            if (dateComparison != 0) {
+                return dateComparison;
+            }
+
+            // If dates are equal, compare by time
+            LocalTime time1 = event1.getTime();
+            LocalTime time2 = event2.getTime();
+
+            // Handle null times (null comes first)
+            if (time1 == null && time2 == null) return 0;
+            if (time1 == null) return -1;
+            if (time2 == null) return 1;
+
+            return time1.compareTo(time2);
+        });
+        return searchResult < 0 ? Math.max(0, -(searchResult + 1)) : searchResult;
     }
 
     public void removeEvents() {

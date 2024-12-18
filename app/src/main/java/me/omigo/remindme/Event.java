@@ -9,7 +9,7 @@ import java.time.LocalTime;
 @Entity(tableName = "events")
 public class Event {
     @PrimaryKey(autoGenerate = true)
-    private int id;
+    private long id;
 
     private String title;
     private String place;
@@ -49,11 +49,11 @@ public class Event {
 
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 

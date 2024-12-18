@@ -1,6 +1,7 @@
 package me.omigo.remindme;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -84,7 +85,8 @@ public class ListFragment extends Fragment implements EventDialogFragment.EventD
             event.setTitle(generatedString);
             event.setPriority(isImportant ? Priority.IMPORTANT : Priority.NORMAL);
 
-            eventDao.insert(event);
+            long insert = eventDao.insert(event);
+            event.setId(insert);
             onEventSaved(event);
         });
     }

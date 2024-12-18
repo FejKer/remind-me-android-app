@@ -107,7 +107,8 @@ public class EventDialogFragment extends DialogFragment {
         } else {
             event = new Event(title, place, selectedDate, selectedTime,
                     isImportantSwitch.isChecked() ? Priority.IMPORTANT : Priority.NORMAL);
-            eventDao.insert(event);
+            long insert = eventDao.insert(event);
+            event.setId(insert);
         }
 
         Toast.makeText(requireContext(), "Zapisano", Toast.LENGTH_SHORT).show();
