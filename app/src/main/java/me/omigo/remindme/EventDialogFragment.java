@@ -2,7 +2,9 @@ package me.omigo.remindme;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,7 +23,7 @@ import com.google.android.material.switchmaterial.SwitchMaterial;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-public class EventDialogFragment extends DialogFragment {
+public class EventDialogFragment extends DialogFragment implements CustomTimePickerDialog.OnTimeSelectedListener {
 
     private EditText editTitle, editPlace;
     private TextView dateTextView, timeTextView;
@@ -34,6 +36,16 @@ public class EventDialogFragment extends DialogFragment {
     private AppDatabase appDatabase;
     private EventDao eventDao;
     private EventDialogListener listener;
+
+    @Override
+    public void onTimeSelected(LocalTime time) {
+        this.selectedTime = time;
+    }
+
+    @Override
+    public void onTimeCleared() {
+        this.selectedTime = null;
+    }
 
     public interface EventDialogListener {
         void onEventSaved(Event event);
@@ -95,6 +107,8 @@ public class EventDialogFragment extends DialogFragment {
         appDatabase = AppDatabase.getDatabase(requireContext());
         eventDao = appDatabase.eventDao();
 
+        Log.d("time", "time " + selectedTime);
+
         Event event;
         if (isEditing) {
             event = eventToEdit;
@@ -135,16 +149,7 @@ public class EventDialogFragment extends DialogFragment {
     }
 
     private void showTimePicker() {
-        TimePickerDialog timePickerDialog = new TimePickerDialog(
-                requireContext(),
-                (view, hourOfDay, minute) -> {
-                    selectedTime = LocalTime.of(hourOfDay, minute);
-                    timeTextView.setText(selectedTime.toString());
-                },
-                LocalTime.now().getHour(),
-                LocalTime.now().getMinute(),
-                true
-        );
-        timePickerDialog.show();
+        CustomTimePickerDialog dialog = CustomTimePickerDialog.newInstance(selectedTime, timeTextView, this);
+        dialog.show(getChildFragmentManager(), "timePicker");
     }
 }
