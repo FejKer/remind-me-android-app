@@ -24,4 +24,7 @@ public interface EventDao {
 
     @Update
     void update(Event event);
+
+    @Query("DELETE FROM events WHERE parentEventId =:parentId")
+    void deleteByParentId(long parentId);
 }

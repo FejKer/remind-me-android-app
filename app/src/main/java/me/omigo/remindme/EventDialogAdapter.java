@@ -10,6 +10,7 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -17,6 +18,16 @@ import java.util.Optional;
 public class EventDialogAdapter extends RecyclerView.Adapter<EventDialogAdapter.ViewHolder> {
     private List<Event> events;
     private OnEventEditListener editListener;
+
+    public void deleteSlaveEvents(long id) {
+        for (var event : new ArrayList<>(events)) {
+            if (event.getParentEventId().equals(id)) {
+                int index = events.indexOf(event);
+                notifyItemRemoved(index);
+                events.remove(event);
+            }
+        }
+    }
 
     public interface OnEventEditListener {
         void onEventEdit(Event event);
@@ -57,6 +68,10 @@ public class EventDialogAdapter extends RecyclerView.Adapter<EventDialogAdapter.
 
         if (event.getRecurring()) {
             holder.recurringImageView.setVisibility(View.VISIBLE);
+        }
+
+        if (event.getParentEventId() != null && !event.getParentEventId().equals(0L)) {
+            holder.editButton.setVisibility(View.GONE);
         }
 
         holder.editButton.setOnClickListener(v -> {

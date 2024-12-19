@@ -1,5 +1,6 @@
 package me.omigo.remindme;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -17,6 +19,16 @@ import java.util.Optional;
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder> {
     private List<Event> events;
     private OnEventEditListener editListener;
+
+    public void deleteSlaveEvents(long id) {
+        for (var event : new ArrayList<>(events)) {
+            if (event.getParentEventId().equals(id)) {
+                int index = events.indexOf(event);
+                notifyItemRemoved(index);
+                events.remove(event);
+            }
+        }
+    }
 
     public interface OnEventEditListener {
         void onEventEdit(Event event);
@@ -85,6 +97,11 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
         if (event.getRecurring()) {
             holder.imageViewRecurring.setVisibility(View.VISIBLE);
+        }
+
+        if (event.getParentEventId() != null && !event.getParentEventId().equals(0L)) {
+            Log.d("recurring", "parent id " + event.getParentEventId());
+            holder.editButton.setVisibility(View.GONE);
         }
 
         holder.itemView.setAlpha(

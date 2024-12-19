@@ -21,9 +21,11 @@ import androidx.fragment.app.DialogFragment;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class EventDialogFragment extends DialogFragment implements CustomTimePickerDialog.OnTimeSelectedListener {
@@ -60,6 +62,8 @@ public class EventDialogFragment extends DialogFragment implements CustomTimePic
 
     public interface EventDialogListener {
         void onEventSaved(Event event);
+
+        void onSlaveEventsDeleted(long id);
     }
 
     public void setEventToEdit(Event event) {
@@ -173,11 +177,8 @@ public class EventDialogFragment extends DialogFragment implements CustomTimePic
             }
         }
 
-
         appDatabase = AppDatabase.getDatabase(requireContext());
         eventDao = appDatabase.eventDao();
-
-        Log.d("time", "time " + selectedTime);
 
         Event event;
         if (isEditing) {
@@ -205,6 +206,8 @@ public class EventDialogFragment extends DialogFragment implements CustomTimePic
             event.setId(insert);
         }
 
+        handleRecurringEvents(event);
+
         Toast.makeText(requireContext(), "Zapisano", Toast.LENGTH_SHORT).show();
 
         if (listener != null) {
@@ -212,6 +215,37 @@ public class EventDialogFragment extends DialogFragment implements CustomTimePic
         }
 
         dismiss();
+    }
+
+    private void handleRecurringEvents(Event event) {
+        if (event.getRecurring()) {
+            LocalTime time = event.getTime();
+            LocalDateTime localDateTime = LocalDateTime.of(event.getDate(), Optional.ofNullable(time).orElse(LocalTime.of(0,0,0)));
+            LocalDateTime finish = LocalDateTime.of(2050, 12, 31, 23, 59, 59);
+            //bruh
+            while (localDateTime.isBefore(finish)) {
+                var function = event.getRecurringTimeUnit().getFunction();
+                localDateTime = function.apply(event.getRecurringValue(), localDateTime);
+                Event slaveEvent = new Event(event);
+                Log.d("recurring", localDateTime.toString());
+                slaveEvent.setDate(LocalDate.of(localDateTime.getYear(), localDateTime.getMonth(), localDateTime.getDayOfMonth()));
+                slaveEvent.setTime(time);
+                long id = eventDao.insert(slaveEvent);
+                slaveEvent.setId(id);
+
+                Log.d("recurring", "Saving recurring slave event " + slaveEvent);
+
+                if (listener != null) {
+                    listener.onEventSaved(slaveEvent);
+                }
+            }
+        } else {
+            eventDao.deleteByParentId(event.getId());
+            //todo listener.oneventdeleted
+            if (listener != null) {
+                listener.onSlaveEventsDeleted(event.getId());
+            }
+        }
     }
 
     private void showDatePicker() {

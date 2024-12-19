@@ -122,6 +122,13 @@ public class ListFragment extends Fragment implements EventDialogFragment.EventD
         updateEvents();
     }
 
+    @Override
+    public void onSlaveEventsDeleted(long id) {
+        pastEventsAdapter.deleteSlaveEvents(id);
+        futureEventsAdapter.deleteSlaveEvents(id);
+        upcomingEventsAdapter.deleteSlaveEvents(id);
+    }
+
     private void setUpButtons(View view) {
         view.findViewById(R.id.fabAdd).setOnClickListener(v -> {
             EventDialogFragment dialogFragment = new EventDialogFragment();

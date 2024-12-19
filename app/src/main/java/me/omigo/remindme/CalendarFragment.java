@@ -37,6 +37,7 @@ public class CalendarFragment extends Fragment implements EventDialogFragment.Ev
     private GridView calendarGridView;
     private TextView monthYearText;
     private RecyclerView eventsRecyclerView;
+    private Calendar selectedDate;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -59,6 +60,7 @@ public class CalendarFragment extends Fragment implements EventDialogFragment.Ev
 
         // Set up the adapter
         adapter = new CalendarAdapter(requireContext(), currentMonth, markedDates, date -> {
+            this.selectedDate = date;
             showEventsDialog(date);
             //updateEvents(date.get(Calendar.YEAR), date.get(Calendar.MONTH) + 1, date.get(Calendar.DAY_OF_MONTH));
         });
@@ -194,8 +196,21 @@ public class CalendarFragment extends Fragment implements EventDialogFragment.Ev
 
     @Override
     public void onEventSaved(Event event) {
-        if (eventsRecyclerView != null && eventsRecyclerView.getAdapter() != null) {
+        LocalDate localDate = LocalDate.of(selectedDate.get(Calendar.YEAR), (selectedDate.get(Calendar.MONTH) + 1), selectedDate.get(Calendar.DAY_OF_MONTH));
+        if (eventsRecyclerView != null && eventsRecyclerView.getAdapter() != null && event.getDate().equals(localDate)) {
             ((EventDialogAdapter) eventsRecyclerView.getAdapter()).updateEvents(event);
+        }
+
+        markedDates = getDates();
+
+        adapter = new CalendarAdapter(requireContext(), currentMonth, markedDates, adapter.dateClickListener);
+        calendarGridView.setAdapter(adapter);
+    }
+
+    @Override
+    public void onSlaveEventsDeleted(long id) {
+        if (eventsRecyclerView != null && eventsRecyclerView.getAdapter() != null) {
+            ((EventDialogAdapter) eventsRecyclerView.getAdapter()).deleteSlaveEvents(id);
         }
 
         markedDates = getDates();

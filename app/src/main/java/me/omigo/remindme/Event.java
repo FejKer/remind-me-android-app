@@ -20,6 +20,7 @@ public class Event {
     private Boolean isRecurring = Boolean.FALSE;
     private Integer recurringValue;
     private TimeUnit recurringTimeUnit;
+    private Long parentEventId = null;
 
 
     public Event(String title, String place, LocalDate date, LocalTime time, Priority priority) {
@@ -41,6 +42,15 @@ public class Event {
         this.recurringTimeUnit = recurringTimeUnit;
     }
 
+    public Event(Event event) {
+        this.title = event.getTitle();
+        this.place = event.getPlace();
+        this.date = event.getDate();
+        this.time = event.getTime();
+        this.priority = event.getPriority();
+        this.parentEventId = event.getId();
+    }
+
     @Override
     public String toString() {
         return "Event{" +
@@ -50,6 +60,10 @@ public class Event {
                 ", date=" + date +
                 ", time=" + time +
                 ", priority=" + priority +
+                ", isRecurring=" + isRecurring +
+                ", recurringValue=" + recurringValue +
+                ", recurringTimeUnit=" + recurringTimeUnit +
+                ", parentEventId=" + parentEventId +
                 '}';
     }
 
@@ -127,5 +141,13 @@ public class Event {
 
     public void setRecurringTimeUnit(TimeUnit recurringTimeUnit) {
         this.recurringTimeUnit = recurringTimeUnit;
+    }
+
+    public Long getParentEventId() {
+        return parentEventId;
+    }
+
+    public void setParentEventId(long parentEventId) {
+        this.parentEventId = parentEventId;
     }
 }
