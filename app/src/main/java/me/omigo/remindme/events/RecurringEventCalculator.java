@@ -1,5 +1,7 @@
 package me.omigo.remindme.events;
 
+import android.util.Log;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -10,6 +12,8 @@ import java.util.Optional;
 
 public class RecurringEventCalculator {
     public static List<Event> generateRecurringEventInstances(Event parentEvent, LocalDate startDate, LocalDate endDate) {
+        Log.d("recurring", "checking with start " + startDate + " end " + endDate);
+
         if (!parentEvent.getRecurring()) {
             return Collections.emptyList();
         }
@@ -20,14 +24,16 @@ public class RecurringEventCalculator {
                 Optional.ofNullable(time).orElse(LocalTime.of(0, 0, 0)));
         LocalDateTime endDateTime = LocalDateTime.of(endDate, LocalTime.MAX);
 
-        while (currentDateTime.isBefore(endDateTime)) {
-            if (currentDateTime.toLocalDate().isAfter(startDate)) {
+        while (currentDateTime.isBefore(endDateTime) || currentDateTime.isEqual(endDateTime)) {
+            Log.d("recurring", "current datetime " + currentDateTime);
+            if (currentDateTime.toLocalDate().isAfter(startDate) || currentDateTime.toLocalDate().isEqual(startDate)) {
                 Event instance = new Event(parentEvent);
                 instance.setDate(currentDateTime.toLocalDate());
                 instance.setTime(time);
                 instance.setParentEventId(parentEvent.getId());
                 instance.setRecurring(false);
                 instances.add(instance);
+                Log.d("recurring", "adding");
             }
 
             var function = parentEvent.getRecurringTimeUnit().getFunction();

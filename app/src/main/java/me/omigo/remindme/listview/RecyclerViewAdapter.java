@@ -1,5 +1,6 @@
 package me.omigo.remindme.listview;
 
+import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,13 +17,16 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import me.omigo.remindme.AppDatabase;
 import me.omigo.remindme.events.Event;
+import me.omigo.remindme.events.EventDao;
 import me.omigo.remindme.events.Priority;
 import me.omigo.remindme.R;
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder> {
     private List<Event> events;
     private OnEventEditListener editListener;
+    private EventDao eventDao;
 
     public void deleteSlaveEvents(long id) {
         for (var event : new ArrayList<>(events)) {
@@ -38,8 +42,9 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         void onEventEdit(Event event);
     }
 
-    public RecyclerViewAdapter(List<Event> events) {
+    public RecyclerViewAdapter(List<Event> events, Context context) {
         this.events = events;
+        this.eventDao = AppDatabase.getDatabase(context).eventDao();
     }
 
     public void setOnEventEditListener(OnEventEditListener listener) {
@@ -84,7 +89,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         holder.textViewPlace.setText(place);
         holder.textViewDate.setText(event.getDate().toString());
         String time = Optional.ofNullable(event.getTime())
-                .map(x -> x.toString())
+                .map(LocalTime::toString)
                 .orElse("Całodniowe");
         holder.textViewTime.setText(time);
         holder.textViewIsImportant.setText(
@@ -95,7 +100,16 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
         holder.editButton.setOnClickListener(v -> {
             if (editListener != null) {
-                editListener.onEventEdit(event);
+                // If this is a recurring instance, edit the parent event
+                if (event.getParentEventId() != null && event.getParentEventId() != 0L) {
+                    // Find the parent event and edit it instead
+                    Event parentEvent = findParentEvent(event.getParentEventId());
+                    if (parentEvent != null) {
+                        editListener.onEventEdit(parentEvent);
+                    }
+                } else {
+                    editListener.onEventEdit(event);
+                }
             }
         });
 
@@ -104,7 +118,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         }
 
         if (event.getParentEventId() != null && !event.getParentEventId().equals(0L)) {
-            Log.d("recurring", "parent id " + event.getParentEventId());
             holder.editButton.setVisibility(View.GONE);
         }
 
@@ -113,10 +126,15 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         );
     }
 
+    private Event findParentEvent(Long parentEventId) {
+        return eventDao.findById(parentEventId);
+    }
+
     public void updateEvents(Event newEvent) {
         long newEventId = newEvent.getId();
         Optional<Event> optionalEvent = this.events.stream()
                 .filter(e -> e.getId() == newEventId)
+                .filter(e -> e.getParentEventId() == null || e.getParentEventId().equals(0L)) //klony rekurencyjne
                 .findFirst();
 
         if (optionalEvent.isPresent()) {

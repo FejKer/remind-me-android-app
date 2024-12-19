@@ -1,6 +1,7 @@
 package me.omigo.remindme.listview;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +17,7 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 import me.omigo.remindme.AppDatabase;
 import me.omigo.remindme.events.Event;
@@ -23,6 +25,7 @@ import me.omigo.remindme.events.EventDao;
 import me.omigo.remindme.events.EventDialogFragment;
 import me.omigo.remindme.events.Priority;
 import me.omigo.remindme.R;
+import me.omigo.remindme.events.RecurringEventCalculator;
 
 public class ListFragment extends Fragment implements EventDialogFragment.EventDialogListener {
     private TextView currentEventsTextView;
@@ -70,9 +73,9 @@ public class ListFragment extends Fragment implements EventDialogFragment.EventD
         setupRecyclerView(upcomingEventsRecyclerView);
         setupRecyclerView(futureEventsRecyclerView);
 
-        pastEventsAdapter = new RecyclerViewAdapter(new ArrayList<>());
-        upcomingEventsAdapter = new RecyclerViewAdapter(new ArrayList<>());
-        futureEventsAdapter = new RecyclerViewAdapter(new ArrayList<>());
+        pastEventsAdapter = new RecyclerViewAdapter(new ArrayList<>(), getContext());
+        upcomingEventsAdapter = new RecyclerViewAdapter(new ArrayList<>(), getContext());
+        futureEventsAdapter = new RecyclerViewAdapter(new ArrayList<>(), getContext());
 
         setupAdapter(pastEventsAdapter);
         setupAdapter(upcomingEventsAdapter);
@@ -100,37 +103,100 @@ public class ListFragment extends Fragment implements EventDialogFragment.EventD
         List<Event> allEvents = eventDao.getAllEvents();
         LocalDate today = LocalDate.now();
         LocalDate oneMonthFromNow = today.plusMonths(1);
+        LocalDate threeMonthsFromNow = today.plusMonths(3); // For future events calculation
 
         List<Event> pastEvents = new ArrayList<>();
         List<Event> upcomingEvents = new ArrayList<>();
         List<Event> futureEvents = new ArrayList<>();
 
+        // First, separate regular events
         for (Event event : allEvents) {
-            LocalDate eventDate = event.getDate();
-            if (eventDate.isBefore(today)) {
-                pastEvents.add(event);
-            } else if (eventDate.isBefore(oneMonthFromNow) || eventDate.isEqual(oneMonthFromNow)) {
-                upcomingEvents.add(event);
-            } else {
-                futureEvents.add(event);
+            if (!event.getRecurring()) {
+                Log.d("recurring", "parsing non recurring event " + event);
+                categorizeEvent(event, today, oneMonthFromNow, pastEvents, upcomingEvents, futureEvents);
             }
         }
 
-        pastEvents.forEach(pastEventsAdapter::updateEvents);
-        upcomingEvents.forEach(upcomingEventsAdapter::updateEvents);
-        futureEvents.forEach(futureEventsAdapter::updateEvents);
+        // Handle recurring events
+        for (Event event : allEvents) {
+            if (event.getRecurring()) {
+                Log.d("recurring", "parsing recurring event " + event);
+                categorizeEvent(event, today, oneMonthFromNow, pastEvents, upcomingEvents, futureEvents);
+
+                // Generate past instances
+                List<Event> pastInstances = RecurringEventCalculator.generateRecurringEventInstances(
+                                event,
+                                today.minusMonths(3), // Show past 3 months of recurring events
+                                today
+                        ).stream()
+                        .filter(e -> !(event.getId() == e.getParentEventId() && event.getDate().equals(e.getDate())))
+                        .collect(Collectors.toUnmodifiableList());
+                Log.d("recurring", "past " + pastInstances);
+                pastEvents.addAll(pastInstances);
+
+                // Generate upcoming instances
+                List<Event> upcomingInstances = RecurringEventCalculator.generateRecurringEventInstances(
+                        event,
+                        today,
+                        oneMonthFromNow
+                ).stream()
+                        .filter(e -> !(event.getId() == e.getParentEventId() && event.getDate().equals(e.getDate())))
+                        .collect(Collectors.toUnmodifiableList());
+                Log.d("recurring", "upcomingInstances " + upcomingInstances);
+                upcomingEvents.addAll(upcomingInstances);
+
+                // Generate future instances
+                List<Event> futureInstances = RecurringEventCalculator.generateRecurringEventInstances(
+                        event,
+                        oneMonthFromNow,
+                        threeMonthsFromNow
+                ).stream()
+                        .filter(e -> !(event.getId() == e.getParentEventId() && event.getDate().equals(e.getDate())))
+                        .collect(Collectors.toUnmodifiableList());
+                Log.d("recurring", "futureInstances " + futureInstances);
+                futureEvents.addAll(futureInstances);
+            }
+        }
+
+        // Update adapters
+        updateAdapter(pastEventsAdapter, pastEvents);
+        updateAdapter(upcomingEventsAdapter, upcomingEvents);
+        updateAdapter(futureEventsAdapter, futureEvents);
     }
+
+    private void categorizeEvent(Event event, LocalDate today, LocalDate oneMonthFromNow,
+                                 List<Event> pastEvents, List<Event> upcomingEvents, List<Event> futureEvents) {
+        LocalDate eventDate = event.getDate();
+        if (eventDate.isBefore(today)) {
+            pastEvents.add(event);
+        } else if (eventDate.isBefore(oneMonthFromNow) || eventDate.isEqual(oneMonthFromNow)) {
+            upcomingEvents.add(event);
+        } else {
+            futureEvents.add(event);
+        }
+    }
+
+    private void updateAdapter(RecyclerViewAdapter adapter, List<Event> events) {
+        adapter.removeEvents(); // Clear existing events
+        for (Event event : events) {
+            Log.d("recurring", "updating for event " + event);
+            adapter.updateEvents(event);
+        }
+    }
+
 
     @Override
     public void onEventSaved(Event event) {
+        Log.d("recurring", "event " + event);
         updateEvents();
     }
 
     @Override
     public void onSlaveEventsDeleted(long id) {
-        pastEventsAdapter.deleteSlaveEvents(id);
-        futureEventsAdapter.deleteSlaveEvents(id);
-        upcomingEventsAdapter.deleteSlaveEvents(id);
+        //pastEventsAdapter.deleteSlaveEvents(id);
+        //futureEventsAdapter.deleteSlaveEvents(id);
+        //upcomingEventsAdapter.deleteSlaveEvents(id);
+        updateEvents();
     }
 
     private void setUpButtons(View view) {

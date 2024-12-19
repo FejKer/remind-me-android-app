@@ -212,7 +212,7 @@ public class EventDialogFragment extends DialogFragment implements CustomTimePic
             event.setId(insert);
         }
 
-        handleRecurringEvents(event);
+        //handleRecurringEvents(event);
 
         Toast.makeText(requireContext(), "Zapisano", Toast.LENGTH_SHORT).show();
 

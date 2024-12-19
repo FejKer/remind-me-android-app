@@ -5,6 +5,7 @@ import androidx.room.PrimaryKey;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.Objects;
 
 @Entity(tableName = "events")
 public class Event {
@@ -149,5 +150,18 @@ public class Event {
 
     public void setParentEventId(long parentEventId) {
         this.parentEventId = parentEventId;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Event event = (Event) o;
+        return id == event.id && Objects.equals(title, event.title) && Objects.equals(place, event.place) && Objects.equals(date, event.date) && Objects.equals(time, event.time) && priority == event.priority && Objects.equals(isRecurring, event.isRecurring) && Objects.equals(recurringValue, event.recurringValue) && recurringTimeUnit == event.recurringTimeUnit && Objects.equals(parentEventId, event.parentEventId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, title, place, date, time, priority, isRecurring, recurringValue, recurringTimeUnit, parentEventId);
     }
 }

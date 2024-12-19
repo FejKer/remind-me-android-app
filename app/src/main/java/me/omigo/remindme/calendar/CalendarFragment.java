@@ -2,6 +2,7 @@ package me.omigo.remindme.calendar;
 
 import android.app.AlertDialog;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +20,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import me.omigo.remindme.AppDatabase;
 import me.omigo.remindme.R;
@@ -27,6 +29,7 @@ import me.omigo.remindme.events.EventDao;
 import me.omigo.remindme.events.EventDialogAdapter;
 import me.omigo.remindme.events.EventDialogFragment;
 import me.omigo.remindme.events.Priority;
+import me.omigo.remindme.events.RecurringEventCalculator;
 
 public class CalendarFragment extends Fragment implements EventDialogFragment.EventDialogListener {
     //private RecyclerView recyclerView;
@@ -85,13 +88,53 @@ public class CalendarFragment extends Fragment implements EventDialogFragment.Ev
     }
 
     private List<CalendarAndIsImportantWrapper> getDates() {
-        List<Event> events = eventDao.getAllEvents();
+        List<Event> allEvents = eventDao.getAllEvents();
         List<CalendarAndIsImportantWrapper> calendars = new ArrayList<>();
-        for (var event : events) {
-            Calendar calendar = getCalendarDate(event.getDate().getYear(), event.getDate().getMonthValue() - 1, event.getDate().getDayOfMonth());
-            Boolean isImportant = event.getPriority() == Priority.IMPORTANT;
-            calendars.add(new CalendarAndIsImportantWrapper(calendar, isImportant));
+        LocalDate today = LocalDate.now();
+
+        // First handle non-recurring events
+        for (Event event : allEvents) {
+            if (!event.getRecurring()) {
+                Calendar calendar = getCalendarDate(
+                        event.getDate().getYear(),
+                        event.getDate().getMonthValue() - 1,
+                        event.getDate().getDayOfMonth()
+                );
+                calendars.add(new CalendarAndIsImportantWrapper(
+                        calendar,
+                        event.getPriority() == Priority.IMPORTANT
+                ));
+            }
         }
+
+        // Handle recurring events
+        for (Event event : allEvents) {
+            if (event.getRecurring()) {
+                // Generate instances for 3 months before and 3 months after current date
+                LocalDate startDate = today.minusMonths(3);
+                LocalDate endDate = today.plusMonths(3);
+
+                List<Event> recurringInstances = RecurringEventCalculator
+                        .generateRecurringEventInstances(event, startDate, endDate)
+                        .stream()
+                        .filter(e -> !(event.getId() == e.getParentEventId()
+                                && event.getDate().equals(e.getDate())))
+                        .collect(Collectors.toList());
+
+                for (Event instance : recurringInstances) {
+                    Calendar calendar = getCalendarDate(
+                            instance.getDate().getYear(),
+                            instance.getDate().getMonthValue() - 1,
+                            instance.getDate().getDayOfMonth()
+                    );
+                    calendars.add(new CalendarAndIsImportantWrapper(
+                            calendar,
+                            instance.getPriority() == Priority.IMPORTANT
+                    ));
+                }
+            }
+        }
+
         return calendars;
     }
 
@@ -152,10 +195,34 @@ public class CalendarFragment extends Fragment implements EventDialogFragment.Ev
                 selectedDate.get(Calendar.DAY_OF_MONTH)
         );
 
-        // Get events for the selected date
-        List<Event> events = eventDao.getEventsByDate(date.toEpochDay());
+        Log.d("recurring", "selected date " + date);
 
-        // If no events, show a toast
+        // Get regular events for the selected date
+        List<Event> events = new ArrayList<>(eventDao.getEventsByDate(date.toEpochDay()));
+
+        // Get recurring events
+        List<Event> allEvents = eventDao.getAllEvents();
+        for (Event event : allEvents) {
+            if (event.getRecurring()) {
+                List<Event> instances = RecurringEventCalculator
+                        .generateRecurringEventInstances(event, date, date.plusDays(1))
+                        .stream()
+                        .filter(e -> !(event.getId() == e.getParentEventId()
+                                && event.getDate().equals(e.getDate())))
+                        .collect(Collectors.toList());
+                Log.d("recurring", "instances " + instances);
+                events.addAll(instances);
+            }
+        }
+
+        // Sort events by time
+        events.sort((e1, e2) -> {
+            if (e1.getTime() == null && e2.getTime() == null) return 0;
+            if (e1.getTime() == null) return -1;
+            if (e2.getTime() == null) return 1;
+            return e1.getTime().compareTo(e2.getTime());
+        });
+
         if (events.isEmpty()) {
             Toast.makeText(requireContext(), "Brak wydarzeń tego dnia", Toast.LENGTH_LONG).show();
             return;
