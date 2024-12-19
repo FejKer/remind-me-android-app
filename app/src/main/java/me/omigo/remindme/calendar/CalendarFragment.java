@@ -111,8 +111,8 @@ public class CalendarFragment extends Fragment implements EventDialogFragment.Ev
         for (Event event : allEvents) {
             if (event.getRecurring()) {
                 // Generate instances for 3 months before and 3 months after current date
-                LocalDate startDate = today.minusMonths(3);
-                LocalDate endDate = today.plusMonths(3);
+                LocalDate startDate = today.minusYears(1);
+                LocalDate endDate = today.plusYears(1);
 
                 List<Event> recurringInstances = RecurringEventCalculator
                         .generateRecurringEventInstances(event, startDate, endDate)
