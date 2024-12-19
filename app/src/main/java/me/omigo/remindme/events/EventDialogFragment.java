@@ -193,17 +193,20 @@ public class EventDialogFragment extends DialogFragment implements CustomTimePic
             event.setPriority(isImportantSwitch.isChecked() ? Priority.IMPORTANT : Priority.NORMAL);
 
             event.setRecurring(isRecurringSwitch.isChecked());
-            event.setRecurringValue(Integer.parseInt(recurringInterval.getText().toString()));
-            event.setRecurringTimeUnit(TimeUnit.fromLabel(recurringUnit.getText().toString()));
-
+            if (isRecurringSwitch.isChecked()) {
+                event.setRecurringValue(Integer.parseInt(recurringInterval.getText().toString()));
+                event.setRecurringTimeUnit(TimeUnit.fromLabel(recurringUnit.getText().toString()));
+            }
             eventDao.update(event);
         } else {
             event = new Event(title, place, selectedDate, selectedTime,
                     isImportantSwitch.isChecked() ? Priority.IMPORTANT : Priority.NORMAL);
 
             event.setRecurring(isRecurringSwitch.isChecked());
-            event.setRecurringValue(Integer.parseInt(recurringInterval.getText().toString()));
-            event.setRecurringTimeUnit(TimeUnit.fromLabel(recurringUnit.getText().toString()));
+            if (isRecurringSwitch.isChecked()) {
+                event.setRecurringValue(Integer.parseInt(recurringInterval.getText().toString()));
+                event.setRecurringTimeUnit(TimeUnit.fromLabel(recurringUnit.getText().toString()));
+            }
 
             long insert = eventDao.insert(event);
             event.setId(insert);
