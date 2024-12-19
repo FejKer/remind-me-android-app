@@ -4,6 +4,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
@@ -53,6 +54,10 @@ public class EventDialogAdapter extends RecyclerView.Adapter<EventDialogAdapter.
         holder.importanceText.setTextColor(event.getPriority() == Priority.IMPORTANT ?
                 holder.itemView.getContext().getColor(android.R.color.holo_red_dark) :
                 holder.itemView.getContext().getColor(android.R.color.darker_gray));
+
+        if (event.getRecurring()) {
+            holder.recurringImageView.setVisibility(View.VISIBLE);
+        }
 
         holder.editButton.setOnClickListener(v -> {
             if (editListener != null) {
@@ -110,6 +115,7 @@ public class EventDialogAdapter extends RecyclerView.Adapter<EventDialogAdapter.
     static class ViewHolder extends RecyclerView.ViewHolder {
         TextView titleText, placeText, dateText, timeText, importanceText;
         ImageButton editButton;
+        ImageView recurringImageView;
 
         ViewHolder(View view) {
             super(view);
@@ -119,6 +125,7 @@ public class EventDialogAdapter extends RecyclerView.Adapter<EventDialogAdapter.
             timeText = view.findViewById(R.id.eventTimeText);
             importanceText = view.findViewById(R.id.eventImportanceText);
             editButton = view.findViewById(R.id.editButton);
+            recurringImageView = view.findViewById(R.id.imageViewRecurring);
         }
     }
 }

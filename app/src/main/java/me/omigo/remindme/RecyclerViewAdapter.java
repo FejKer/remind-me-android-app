@@ -4,6 +4,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -36,6 +37,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         public TextView textViewTime;
         public TextView textViewIsImportant;
         public ImageButton editButton;
+        public ImageView imageViewRecurring;
+
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -45,6 +48,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             textViewTime = itemView.findViewById(R.id.textViewTime);
             textViewIsImportant = itemView.findViewById(R.id.textViewIsImportant);
             editButton = itemView.findViewById(R.id.editButton);
+            imageViewRecurring = itemView.findViewById(R.id.imageViewRecurring);
         }
     }
 
@@ -78,6 +82,10 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                 editListener.onEventEdit(event);
             }
         });
+
+        if (event.getRecurring()) {
+            holder.imageViewRecurring.setVisibility(View.VISIBLE);
+        }
 
         holder.itemView.setAlpha(
                 event.getPriority() == Priority.IMPORTANT ? 1.0f : 0.85f

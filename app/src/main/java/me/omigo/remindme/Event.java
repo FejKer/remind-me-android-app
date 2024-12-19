@@ -17,12 +17,28 @@ public class Event {
     private LocalTime time;
     private Priority priority;
 
+    private Boolean isRecurring = Boolean.FALSE;
+    private Integer recurringValue;
+    private TimeUnit recurringTimeUnit;
+
+
     public Event(String title, String place, LocalDate date, LocalTime time, Priority priority) {
         this.title = title;
         this.place = place;
         this.date = date;
         this.time = time;
         this.priority = priority;
+    }
+
+    public Event(String title, String place, LocalDate date, LocalTime time, Priority priority, Boolean isRecurring, Integer recurringValue, TimeUnit recurringTimeUnit) {
+        this.title = title;
+        this.place = place;
+        this.date = date;
+        this.time = time;
+        this.priority = priority;
+        this.isRecurring = isRecurring;
+        this.recurringValue = recurringValue;
+        this.recurringTimeUnit = recurringTimeUnit;
     }
 
     @Override
@@ -87,5 +103,29 @@ public class Event {
 
     public void setTime(LocalTime time) {
         this.time = time;
+    }
+
+    public Boolean getRecurring() {
+        return isRecurring;
+    }
+
+    public void setRecurring(Boolean recurring) {
+        isRecurring = recurring;
+    }
+
+    public Integer getRecurringValue() {
+        return recurringValue;
+    }
+
+    public void setRecurringValue(Integer recurringValue) {
+        this.recurringValue = recurringValue;
+    }
+
+    public TimeUnit getRecurringTimeUnit() {
+        return recurringTimeUnit;
+    }
+
+    public void setRecurringTimeUnit(TimeUnit recurringTimeUnit) {
+        this.recurringTimeUnit = recurringTimeUnit;
     }
 }
