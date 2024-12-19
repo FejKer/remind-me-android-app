@@ -1,16 +1,13 @@
-package me.omigo.remindme;
+package me.omigo.remindme.listview;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -19,6 +16,13 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+
+import me.omigo.remindme.AppDatabase;
+import me.omigo.remindme.events.Event;
+import me.omigo.remindme.events.EventDao;
+import me.omigo.remindme.events.EventDialogFragment;
+import me.omigo.remindme.events.Priority;
+import me.omigo.remindme.R;
 
 public class ListFragment extends Fragment implements EventDialogFragment.EventDialogListener {
     private TextView currentEventsTextView;

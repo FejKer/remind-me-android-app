@@ -1,14 +1,12 @@
-package me.omigo.remindme;
+package me.omigo.remindme.calendar;
 
 import android.app.AlertDialog;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.CalendarView;
 import android.widget.GridView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -21,6 +19,14 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+
+import me.omigo.remindme.AppDatabase;
+import me.omigo.remindme.R;
+import me.omigo.remindme.events.Event;
+import me.omigo.remindme.events.EventDao;
+import me.omigo.remindme.events.EventDialogAdapter;
+import me.omigo.remindme.events.EventDialogFragment;
+import me.omigo.remindme.events.Priority;
 
 public class CalendarFragment extends Fragment implements EventDialogFragment.EventDialogListener {
     //private RecyclerView recyclerView;

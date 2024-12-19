@@ -1,4 +1,4 @@
-package me.omigo.remindme;
+package me.omigo.remindme.events;
 
 
 
@@ -13,6 +13,8 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
 import java.time.LocalTime;
+
+import me.omigo.remindme.R;
 
 public class CustomTimePickerDialog extends DialogFragment {
     private LocalTime selectedTime;

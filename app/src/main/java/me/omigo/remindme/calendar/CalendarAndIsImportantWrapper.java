@@ -1,4 +1,4 @@
-package me.omigo.remindme;
+package me.omigo.remindme.calendar;
 
 import java.util.Calendar;
 

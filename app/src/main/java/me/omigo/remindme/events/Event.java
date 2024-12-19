@@ -1,4 +1,4 @@
-package me.omigo.remindme;
+package me.omigo.remindme.events;
 
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;

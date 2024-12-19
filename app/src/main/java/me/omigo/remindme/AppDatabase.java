@@ -7,6 +7,9 @@ import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import androidx.room.TypeConverters;
 
+import me.omigo.remindme.events.Event;
+import me.omigo.remindme.events.EventDao;
+
 @Database(entities = {Event.class}, version = 5)
 @TypeConverters({Converters.class})
 public abstract class AppDatabase extends RoomDatabase {

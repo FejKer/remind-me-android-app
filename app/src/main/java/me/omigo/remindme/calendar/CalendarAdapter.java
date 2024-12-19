@@ -1,4 +1,4 @@
-package me.omigo.remindme;
+package me.omigo.remindme.calendar;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -11,6 +11,8 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+
+import me.omigo.remindme.R;
 
 public class CalendarAdapter extends BaseAdapter {
     private final Context context;

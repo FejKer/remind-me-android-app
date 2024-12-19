@@ -1,4 +1,4 @@
-package me.omigo.remindme;
+package me.omigo.remindme.events;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;

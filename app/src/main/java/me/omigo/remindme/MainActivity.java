@@ -1,22 +1,16 @@
 package me.omigo.remindme;
 
-import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.WindowManager;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.tabs.TabLayout;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.Random;
+import me.omigo.remindme.calendar.CalendarFragment;
+import me.omigo.remindme.listview.ListFragment;
 
 public class MainActivity extends AppCompatActivity {
 

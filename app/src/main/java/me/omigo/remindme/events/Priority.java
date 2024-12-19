@@ -1,4 +1,4 @@
-package me.omigo.remindme;
+package me.omigo.remindme.events;
 
 public enum Priority {
     NORMAL("Zwykłe"), IMPORTANT("Ważne");

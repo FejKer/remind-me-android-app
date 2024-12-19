@@ -1,4 +1,4 @@
-package me.omigo.remindme;
+package me.omigo.remindme.events;
 
 import android.app.DatePickerDialog;
 import android.os.Bundle;
@@ -27,6 +27,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import me.omigo.remindme.AppDatabase;
+import me.omigo.remindme.R;
 
 public class EventDialogFragment extends DialogFragment implements CustomTimePickerDialog.OnTimeSelectedListener {
 

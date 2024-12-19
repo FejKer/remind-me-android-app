@@ -1,11 +1,10 @@
-package me.omigo.remindme;
+package me.omigo.remindme.events;
 
 import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.Query;
 import androidx.room.Update;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @Dao
