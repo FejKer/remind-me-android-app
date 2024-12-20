@@ -1,5 +1,7 @@
 package me.omigo.remindme.events;
 
+import android.content.Context;
+import android.content.res.Resources;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -7,7 +9,10 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.card.MaterialCardView;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -81,6 +86,17 @@ public class EventDialogAdapter extends RecyclerView.Adapter<EventDialogAdapter.
                 editListener.onEventEdit(event);
             }
         });
+
+        if (event.getPriority() == Priority.IMPORTANT) {
+            Context context = holder.itemView.getContext();
+            Resources resources = context.getResources();
+
+            holder.materialCardView.setStrokeWidth(resources.getDimensionPixelSize(R.dimen.stroke_width));
+            holder.materialCardView.setStrokeColor(ContextCompat.getColor(context, R.color.red));
+        } else {
+            holder.materialCardView.setStrokeWidth(0);
+
+        }
     }
 
     @Override
@@ -133,6 +149,7 @@ public class EventDialogAdapter extends RecyclerView.Adapter<EventDialogAdapter.
         TextView titleText, placeText, dateText, timeText, importanceText;
         ImageButton editButton;
         ImageView recurringImageView;
+        MaterialCardView materialCardView;
 
         ViewHolder(View view) {
             super(view);
@@ -143,6 +160,7 @@ public class EventDialogAdapter extends RecyclerView.Adapter<EventDialogAdapter.
             importanceText = view.findViewById(R.id.eventImportanceText);
             editButton = view.findViewById(R.id.editButton);
             recurringImageView = view.findViewById(R.id.imageViewRecurring);
+            materialCardView = view.findViewById(R.id.materialCardView);
         }
     }
 }

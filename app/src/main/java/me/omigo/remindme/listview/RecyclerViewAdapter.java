@@ -1,6 +1,7 @@
 package me.omigo.remindme.listview;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,7 +10,10 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.card.MaterialCardView;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -60,6 +64,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         public ImageButton editButton;
         public ImageView imageViewRecurring;
 
+        public MaterialCardView materialCardView;
+
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -70,6 +76,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             textViewIsImportant = itemView.findViewById(R.id.textViewIsImportant);
             editButton = itemView.findViewById(R.id.editButton);
             imageViewRecurring = itemView.findViewById(R.id.imageViewRecurring);
+            materialCardView = itemView.findViewById(R.id.materialCardView);
         }
     }
 
@@ -126,6 +133,20 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         holder.itemView.setAlpha(
                 event.getPriority() == Priority.IMPORTANT ? 1.0f : 0.85f
         );
+
+        if (event.getPriority() == Priority.IMPORTANT) {
+            Context context = holder.itemView.getContext();
+            Resources resources = context.getResources();
+
+            // Use setStrokeWidth and setStrokeColor methods instead of property access
+            holder.materialCardView.setStrokeWidth(resources.getDimensionPixelSize(R.dimen.stroke_width));
+            holder.materialCardView.setStrokeColor(ContextCompat.getColor(context, R.color.red));
+        } else {
+            // Reset the stroke for non-important events
+            holder.materialCardView.setStrokeWidth(0);
+            // Or set to default color if you prefer
+            // holder.materialCardView.setStrokeColor(Color.TRANSPARENT);
+        }
     }
 
     private Event findParentEvent(Long parentEventId) {
