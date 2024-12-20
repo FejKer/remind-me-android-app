@@ -117,6 +117,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             holder.imageViewRecurring.setVisibility(View.VISIBLE);
         }
 
+        holder.editButton.setVisibility(View.VISIBLE);
+
         if (event.getParentEventId() != null && !event.getParentEventId().equals(0L)) {
             holder.editButton.setVisibility(View.GONE);
         }
