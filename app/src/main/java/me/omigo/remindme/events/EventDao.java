@@ -15,6 +15,9 @@ public interface EventDao {
     @Query("SELECT * FROM events ORDER BY date ASC, time ASC")
     List<Event> getAllEvents();
 
+    @Query("SELECT * FROM events WHERE date <=:nowPlus72Hours ORDER BY date ASC, time ASC")
+    List<Event> getEventsWithin72Hours(Long nowPlus72Hours);
+
     @Query("DELETE FROM events")
     void purgeDb();
 
