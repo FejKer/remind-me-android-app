@@ -15,7 +15,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Collectors;
 
@@ -103,7 +105,7 @@ public class ListFragment extends Fragment implements EventDialogFragment.EventD
         List<Event> allEvents = eventDao.getAllEvents();
         LocalDate today = LocalDate.now();
         LocalDate oneMonthFromNow = today.plusMonths(1);
-        LocalDate threeMonthsFromNow = today.plusMonths(3); // For future events calculation
+        LocalDate fiveYearsFromNow = today.plusYears(5); // For future events calculation
 
         List<Event> pastEvents = new ArrayList<>();
         List<Event> upcomingEvents = new ArrayList<>();
@@ -121,40 +123,59 @@ public class ListFragment extends Fragment implements EventDialogFragment.EventD
         for (Event event : allEvents) {
             if (event.getRecurring()) {
                 Log.d("recurring", "parsing recurring event " + event);
-                categorizeEvent(event, today, oneMonthFromNow, pastEvents, upcomingEvents, futureEvents);
+                //categorizeEvent(event, today, oneMonthFromNow, pastEvents, upcomingEvents, futureEvents);
 
-                // Generate past instances
-                List<Event> pastInstances = RecurringEventCalculator.generateRecurringEventInstances(
-                                event,
-                                today.minusMonths(3), // Show past 3 months of recurring events
-                                today
-                        ).stream()
-                        .filter(e -> !(event.getId() == e.getParentEventId() && event.getDate().equals(e.getDate())))
-                        .collect(Collectors.toUnmodifiableList());
-                Log.d("recurring", "past " + pastInstances);
-                pastEvents.addAll(pastInstances);
+//                // Generate past instances
+//                List<Event> pastInstances = RecurringEventCalculator.generateRecurringEventInstances(
+//                                event,
+//                                today.minusMonths(3), // Show past 3 months of recurring events
+//                                today
+//                        ).stream()
+//                        .filter(e -> !(event.getId() == e.getParentEventId() && event.getDate().equals(e.getDate())))
+//                        .collect(Collectors.toUnmodifiableList());
+//                Log.d("recurring", "past " + pastInstances);
+//                pastEvents.addAll(pastInstances);
 
                 // Generate upcoming instances
+// First, get all upcoming events within a month
                 List<Event> upcomingInstances = RecurringEventCalculator.generateRecurringEventInstances(
-                        event,
-                        today,
-                        oneMonthFromNow
-                ).stream()
-                        .filter(e -> !(event.getId() == e.getParentEventId() && event.getDate().equals(e.getDate())))
+                                event,
+                                today,
+                                oneMonthFromNow
+                        ).stream()
                         .collect(Collectors.toUnmodifiableList());
-                Log.d("recurring", "upcomingInstances " + upcomingInstances);
-                upcomingEvents.addAll(upcomingInstances);
 
-                // Generate future instances
-                List<Event> futureInstances = RecurringEventCalculator.generateRecurringEventInstances(
-                        event,
-                        oneMonthFromNow,
-                        threeMonthsFromNow
-                ).stream()
-                        .filter(e -> !(event.getId() == e.getParentEventId() && event.getDate().equals(e.getDate())))
-                        .collect(Collectors.toUnmodifiableList());
-                Log.d("recurring", "futureInstances " + futureInstances);
-                futureEvents.addAll(futureInstances);
+// Get the closest upcoming event (if any)
+                Optional<Event> closestUpcoming = upcomingInstances.stream()
+                        .min(Comparator.comparing(Event::getDate));
+
+// If today has an event, we want today's and next closest
+                if (closestUpcoming.isPresent() && closestUpcoming.get().getDate().equals(today)) {
+                    // Keep today's event
+                    upcomingEvents.add(closestUpcoming.get());
+
+                    // Find next closest (excluding today's event)
+                    upcomingInstances.stream()
+                            .filter(e -> !e.getDate().equals(today))
+                            .min(Comparator.comparing(Event::getDate))
+                            .ifPresent(upcomingEvents::add);
+                } else if (closestUpcoming.isPresent()) {
+                    // Just add the closest upcoming event
+                    upcomingEvents.add(closestUpcoming.get());
+                } else {
+                    // If no upcoming events within a month, check future events
+                    List<Event> futureInstances = RecurringEventCalculator.generateRecurringEventInstances(
+                                    event,
+                                    oneMonthFromNow,
+                                    fiveYearsFromNow
+                            ).stream()
+                            .collect(Collectors.toUnmodifiableList());
+
+                    // Get the closest future event
+                    futureInstances.stream()
+                            .min(Comparator.comparing(Event::getDate))
+                            .ifPresent(futureEvents::add);
+                }
             }
         }
 

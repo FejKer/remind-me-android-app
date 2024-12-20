@@ -18,8 +18,8 @@ public interface EventDao {
     @Query("DELETE FROM events")
     void purgeDb();
 
-    @Query("SELECT * FROM events WHERE date =:now ORDER BY date ASC, time ASC")
-    List<Event> getEventsByDate(Long now);
+    @Query("SELECT * FROM events WHERE date =:now AND isRecurring IS FALSE ORDER BY date ASC, time ASC")
+    List<Event> getEventsByDateAndNotRecurring(Long now);
 
     @Update
     void update(Event event);
@@ -29,4 +29,7 @@ public interface EventDao {
 
     @Query("SELECT * FROM events WHERE id =:parentEventId")
     Event findById(Long parentEventId);
+
+    @Query("SELECT * FROM events WHERE isRecurring IS TRUE")
+    List<Event> getAllRecurringEvents();
 }

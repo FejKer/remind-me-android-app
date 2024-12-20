@@ -11,6 +11,7 @@ import com.google.android.material.tabs.TabLayout;
 
 import me.omigo.remindme.calendar.CalendarFragment;
 import me.omigo.remindme.listview.ListFragment;
+import me.omigo.remindme.recurring.RecurringEventsFragment;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -41,8 +42,10 @@ public class MainActivity extends AppCompatActivity {
                 Fragment selectedFragment;
                 if (tab.getPosition() == 0) {
                     selectedFragment = new ListFragment();
-                } else {
+                } else if (tab.getPosition() == 1){
                     selectedFragment = new CalendarFragment();
+                } else {
+                    selectedFragment = new RecurringEventsFragment();
                 }
                 loadFragment(selectedFragment);
             }

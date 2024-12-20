@@ -24,7 +24,7 @@ public class RecurringEventCalculator {
                 Optional.ofNullable(time).orElse(LocalTime.of(0, 0, 0)));
         LocalDateTime endDateTime = LocalDateTime.of(endDate, LocalTime.MAX);
 
-        while (currentDateTime.isBefore(endDateTime) || currentDateTime.isEqual(endDateTime)) {
+        while (currentDateTime.isBefore(endDateTime)) {
             Log.d("recurring", "current datetime " + currentDateTime);
             if (currentDateTime.toLocalDate().isAfter(startDate) || currentDateTime.toLocalDate().isEqual(startDate)) {
                 Event instance = new Event(parentEvent);

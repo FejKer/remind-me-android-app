@@ -117,8 +117,8 @@ public class CalendarFragment extends Fragment implements EventDialogFragment.Ev
                 List<Event> recurringInstances = RecurringEventCalculator
                         .generateRecurringEventInstances(event, startDate, endDate)
                         .stream()
-                        .filter(e -> !(event.getId() == e.getParentEventId()
-                                && event.getDate().equals(e.getDate())))
+                       // .filter(e -> !(event.getId() == e.getParentEventId()
+                       //         && event.getDate().equals(e.getDate())))
                         .collect(Collectors.toList());
 
                 for (Event instance : recurringInstances) {
@@ -198,17 +198,15 @@ public class CalendarFragment extends Fragment implements EventDialogFragment.Ev
         Log.d("recurring", "selected date " + date);
 
         // Get regular events for the selected date
-        List<Event> events = new ArrayList<>(eventDao.getEventsByDate(date.toEpochDay()));
+        List<Event> events = new ArrayList<>(eventDao.getEventsByDateAndNotRecurring(date.toEpochDay()));
 
         // Get recurring events
         List<Event> allEvents = eventDao.getAllEvents();
         for (Event event : allEvents) {
             if (event.getRecurring()) {
                 List<Event> instances = RecurringEventCalculator
-                        .generateRecurringEventInstances(event, date, date.plusDays(1))
+                        .generateRecurringEventInstances(event, date, LocalDate.from(date.atTime(23,59,59,999999999)))
                         .stream()
-                        .filter(e -> !(event.getId() == e.getParentEventId()
-                                && event.getDate().equals(e.getDate())))
                         .collect(Collectors.toList());
                 Log.d("recurring", "instances " + instances);
                 events.addAll(instances);
