@@ -23,6 +23,8 @@ public class Event {
     private TimeUnit recurringTimeUnit;
     private Long parentEventId = null;
 
+    private Boolean isHiddenFromScreenSaver = Boolean.FALSE;
+
     private Boolean deleted = Boolean.FALSE;
 
 
@@ -162,16 +164,24 @@ public class Event {
         this.deleted = deleted;
     }
 
+    public Boolean getHiddenFromScreenSaver() {
+        return isHiddenFromScreenSaver;
+    }
+
+    public void setHiddenFromScreenSaver(Boolean hiddenFromScreenSaver) {
+        isHiddenFromScreenSaver = hiddenFromScreenSaver;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Event event = (Event) o;
-        return id == event.id && Objects.equals(title, event.title) && Objects.equals(place, event.place) && Objects.equals(date, event.date) && Objects.equals(time, event.time) && priority == event.priority && Objects.equals(isRecurring, event.isRecurring) && Objects.equals(recurringValue, event.recurringValue) && recurringTimeUnit == event.recurringTimeUnit && Objects.equals(parentEventId, event.parentEventId) && Objects.equals(deleted, event.deleted);
+        return id == event.id && Objects.equals(title, event.title) && Objects.equals(place, event.place) && Objects.equals(date, event.date) && Objects.equals(time, event.time) && priority == event.priority && Objects.equals(isRecurring, event.isRecurring) && Objects.equals(recurringValue, event.recurringValue) && recurringTimeUnit == event.recurringTimeUnit && Objects.equals(parentEventId, event.parentEventId) && Objects.equals(isHiddenFromScreenSaver, event.isHiddenFromScreenSaver) && Objects.equals(deleted, event.deleted);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, title, place, date, time, priority, isRecurring, recurringValue, recurringTimeUnit, parentEventId, deleted);
+        return Objects.hash(id, title, place, date, time, priority, isRecurring, recurringValue, recurringTimeUnit, parentEventId, isHiddenFromScreenSaver, deleted);
     }
 }

@@ -13,6 +13,9 @@ public abstract class BaseActivity extends AppCompatActivity {
     private static final long INACTIVE_TIMEOUT = 30000;
     private Handler inactivityHandler = new Handler();
 
+    private boolean isDialogShowing = false;
+
+
     private final Runnable inactivityRunnable = this::startScreenSaver;
 
     @Override
@@ -35,11 +38,17 @@ public abstract class BaseActivity extends AppCompatActivity {
         inactivityHandler.postDelayed(inactivityRunnable, INACTIVE_TIMEOUT);
     }
 
-    private void startScreenSaver() {
-        Log.d("recurring", "Putting into screen saver mode");
-        Intent intent = new Intent(this, EventScreenSaverActivity.class);
-        startActivity(intent);
+    public void setDialogShowing(boolean showing) {
+        isDialogShowing = showing;
+    }
 
+    protected void startScreenSaver() {
+        Log.d("recurring", "trying to start screen saver");
+        if (!isDialogShowing) {
+            Log.d("recurring", "starting screen saver");
+            Intent intent = new Intent(this, EventScreenSaverActivity.class);
+            startActivity(intent);
+        }
     }
 
     @Override

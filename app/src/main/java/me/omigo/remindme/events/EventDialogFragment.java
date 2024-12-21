@@ -53,22 +53,12 @@ public class EventDialogFragment extends DialogFragment implements CustomTimePic
     private EventDialogListener listener;
 
     private SwitchMaterial isRecurringSwitch;
+    private SwitchMaterial isHiddenFromScreenSaver;
     private RadioGroup recurringTypeGroup;
     private View recurringOptionsLayout;
     private View customRecurringLayout;
     private EditText recurringInterval;
     private AutoCompleteTextView recurringUnit;
-
-    private BaseActivity baseActivity;
-
-    @Override
-    public void onAttach(@NonNull Context context) {
-        super.onAttach(context);
-        if (context instanceof BaseActivity) {
-            baseActivity = (BaseActivity) context;
-        }
-    }
-
 
     @Override
     public void onTimeSelected(LocalTime time) {
@@ -78,6 +68,23 @@ public class EventDialogFragment extends DialogFragment implements CustomTimePic
     @Override
     public void onTimeCleared() {
         this.selectedTime = null;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        if (getActivity() instanceof BaseActivity) {
+            ((BaseActivity) getActivity()).setDialogShowing(true);
+        }
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (getActivity() instanceof BaseActivity activity) {
+            activity.resetInactivityTimer();
+            activity.setDialogShowing(false);
+        }
     }
 
     public interface EventDialogListener {
@@ -112,6 +119,7 @@ public class EventDialogFragment extends DialogFragment implements CustomTimePic
 
 
         isRecurringSwitch = view.findViewById(R.id.isRecurring);
+        isHiddenFromScreenSaver = view.findViewById(R.id.isHiddenFromScreenSaver);
         recurringOptionsLayout = view.findViewById(R.id.recurringOptionsLayout);
         recurringTypeGroup = view.findViewById(R.id.recurringTypeGroup);
         customRecurringLayout = view.findViewById(R.id.customRecurringLayout);
@@ -158,33 +166,9 @@ public class EventDialogFragment extends DialogFragment implements CustomTimePic
 
         setupAutoComplete();
 
-        applyTouchListenerRecursively(view);
-
         return view;
     }
 
-    private void applyTouchListenerRecursively(View view) {
-        view.setOnTouchListener((v, event) -> {
-            if (baseActivity != null) {
-                baseActivity.resetInactivityTimer();
-            }
-            return false;
-        });
-
-        if (view instanceof ViewGroup) {
-            ViewGroup viewGroup = (ViewGroup) view;
-            for (int i = 0; i < viewGroup.getChildCount(); i++) {
-                View child = viewGroup.getChildAt(i);
-                applyTouchListenerRecursively(child);
-            }
-        }
-
-        view.setOnClickListener(v -> {
-            if (baseActivity != null) {
-                baseActivity.resetInactivityTimer();
-            }
-        });
-    }
 
     private void setupAutoComplete() {
         // Create adapters for both fields
@@ -341,6 +325,9 @@ public class EventDialogFragment extends DialogFragment implements CustomTimePic
                 event.setRecurringValue(Integer.parseInt(recurringInterval.getText().toString()));
                 event.setRecurringTimeUnit(TimeUnit.fromLabel(recurringUnit.getText().toString()));
             }
+
+            event.setHiddenFromScreenSaver(isHiddenFromScreenSaver.isChecked());
+
             eventDao.update(event);
         } else {
             event = new Event(title, place, selectedDate, selectedTime,
@@ -351,6 +338,8 @@ public class EventDialogFragment extends DialogFragment implements CustomTimePic
                 event.setRecurringValue(Integer.parseInt(recurringInterval.getText().toString()));
                 event.setRecurringTimeUnit(TimeUnit.fromLabel(recurringUnit.getText().toString()));
             }
+
+            event.setHiddenFromScreenSaver(isHiddenFromScreenSaver.isChecked());
 
             long insert = eventDao.insert(event);
             event.setId(insert);
