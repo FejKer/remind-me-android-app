@@ -77,6 +77,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         public ImageButton editButton;
         public ImageButton deleteButton;
         public ImageView imageViewRecurring;
+        public ImageView imageViewIsHidden;
 
         public MaterialCardView materialCardView;
 
@@ -92,6 +93,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             imageViewRecurring = itemView.findViewById(R.id.imageViewRecurring);
             materialCardView = itemView.findViewById(R.id.materialCardView);
             deleteButton = itemView.findViewById(R.id.deleteButton);
+            imageViewIsHidden = itemView.findViewById(R.id.imageViewScreenSaverHidden);
         }
     }
 
@@ -108,6 +110,9 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         Event event = events.get(position);
         holder.textViewTitle.setText(event.getTitle());
         String place = Optional.ofNullable(event.getPlace()).orElse("");
+        if (!place.isEmpty()) {
+            place = "Miejsce: " + place;
+        }
         holder.textViewPlace.setText(place);
         holder.textViewDate.setText(event.getDate().toString());
         String time = Optional.ofNullable(event.getTime())
@@ -185,6 +190,9 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         }
 
         holder.editButton.setVisibility(View.VISIBLE);
+
+        holder.imageViewIsHidden.setVisibility(event.getHiddenFromScreenSaver() ? View.VISIBLE : View.GONE);
+
 
         if (event.getParentEventId() != null && !event.getParentEventId().equals(0L)) {
             holder.editButton.setVisibility(View.GONE);

@@ -56,23 +56,41 @@
                                     android:textAppearance="?attr/textAppearanceBody2" />
                         </LinearLayout>
 
-                        <TextView
-                            android:id="@+id/textViewIsImportant"
+                        <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:orientation="horizontal"
                             android:layout_marginTop="8dp"
-                            android:textAppearance="?attr/textAppearanceCaption"
-                            android:textColor="?attr/colorPrimary" />
+                            android:gravity="center_vertical">
 
-                        <ImageView
-                            android:id="@+id/imageViewRecurring"
-                            android:layout_width="16dp"
-                            android:layout_height="16dp"
-                            android:layout_marginStart="8dp"
-                            android:src="@drawable/ic_repeat"
-                            android:visibility="gone"
-                            app:tint="?attr/colorPrimary"
-                            android:contentDescription="Recurring event" />
+                                <TextView
+                                    android:id="@+id/textViewIsImportant"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:textAppearance="?attr/textAppearanceCaption"
+                                    android:textColor="?attr/colorPrimary" />
+
+                                <ImageView
+                                    android:id="@+id/imageViewRecurring"
+                                    android:layout_width="32dp"
+                                    android:layout_height="32dp"
+                                    android:layout_marginStart="8dp"
+                                    android:src="@drawable/ic_repeat"
+                                    android:visibility="gone"
+                                    app:tint="?attr/colorPrimary"
+                                    android:contentDescription="Recurring event" />
+
+                                <ImageView
+                                    android:id="@+id/imageViewScreenSaverHidden"
+                                    android:layout_width="32dp"
+                                    android:layout_height="32dp"
+                                    android:layout_marginStart="8dp"
+                                    android:src="@drawable/ic_screensaver_hidden"
+                                    android:visibility="gone"
+                                    app:tint="?attr/colorPrimary"
+                                    android:contentDescription="Hidden from screen saver" />
+
+                        </LinearLayout>
                 </LinearLayout>
 
                 <ImageButton

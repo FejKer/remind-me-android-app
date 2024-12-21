@@ -69,6 +69,8 @@ public class Event {
                 ", recurringValue=" + recurringValue +
                 ", recurringTimeUnit=" + recurringTimeUnit +
                 ", parentEventId=" + parentEventId +
+                ", isHiddenFromScreenSaver=" + isHiddenFromScreenSaver +
+                ", deleted=" + deleted +
                 '}';
     }
 
