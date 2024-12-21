@@ -36,6 +36,7 @@ import java.util.stream.Collectors;
 
 import me.omigo.remindme.AppDatabase;
 import me.omigo.remindme.R;
+import me.omigo.remindme.screensaver.BaseActivity;
 
 public class EventDialogFragment extends DialogFragment implements CustomTimePickerDialog.OnTimeSelectedListener {
 
@@ -57,6 +58,16 @@ public class EventDialogFragment extends DialogFragment implements CustomTimePic
     private View customRecurringLayout;
     private EditText recurringInterval;
     private AutoCompleteTextView recurringUnit;
+
+    private BaseActivity baseActivity;
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        if (context instanceof BaseActivity) {
+            baseActivity = (BaseActivity) context;
+        }
+    }
 
 
     @Override
@@ -88,7 +99,6 @@ public class EventDialogFragment extends DialogFragment implements CustomTimePic
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.event_dialog, container, false);
-
 
         appDatabase = AppDatabase.getDatabase(requireContext());
         eventDao = appDatabase.eventDao();
@@ -148,7 +158,32 @@ public class EventDialogFragment extends DialogFragment implements CustomTimePic
 
         setupAutoComplete();
 
+        applyTouchListenerRecursively(view);
+
         return view;
+    }
+
+    private void applyTouchListenerRecursively(View view) {
+        view.setOnTouchListener((v, event) -> {
+            if (baseActivity != null) {
+                baseActivity.resetInactivityTimer();
+            }
+            return false;
+        });
+
+        if (view instanceof ViewGroup) {
+            ViewGroup viewGroup = (ViewGroup) view;
+            for (int i = 0; i < viewGroup.getChildCount(); i++) {
+                View child = viewGroup.getChildAt(i);
+                applyTouchListenerRecursively(child);
+            }
+        }
+
+        view.setOnClickListener(v -> {
+            if (baseActivity != null) {
+                baseActivity.resetInactivityTimer();
+            }
+        });
     }
 
     private void setupAutoComplete() {

@@ -22,7 +22,6 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
     private void setupInactivityTimer() {
-        Log.d("recurring", "resetting timer");
         View decorView = getWindow().getDecorView();
         decorView.setOnTouchListener((v, event) -> {
             resetInactivityTimer();
@@ -30,7 +29,8 @@ public abstract class BaseActivity extends AppCompatActivity {
         });
     }
 
-    protected void resetInactivityTimer() {
+    public void resetInactivityTimer() {
+        Log.d("recurring", "resetting timer");
         inactivityHandler.removeCallbacks(inactivityRunnable);
         inactivityHandler.postDelayed(inactivityRunnable, INACTIVE_TIMEOUT);
     }
@@ -57,7 +57,6 @@ public abstract class BaseActivity extends AppCompatActivity {
     // Override dispatchTouchEvent to catch all touch events
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
-        Log.d("recurring", "resetting timer");
         resetInactivityTimer();
         return super.dispatchTouchEvent(ev);
     }

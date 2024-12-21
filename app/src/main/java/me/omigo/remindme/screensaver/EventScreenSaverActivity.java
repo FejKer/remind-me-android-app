@@ -99,7 +99,7 @@ public class EventScreenSaverActivity extends BaseActivity {
     };
 
     @Override
-    protected void resetInactivityTimer() {
+    public void resetInactivityTimer() {
         // Do nothing - prevent starting another screen saver
     }
 
