@@ -1,10 +1,17 @@
 package me.omigo.remindme;
 
+import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
+import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
+import android.widget.ScrollView;
 
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.tabs.TabLayout;
 
@@ -57,6 +64,42 @@ public class MainActivity extends BaseActivity {
             @Override
             public void onTabReselected(TabLayout.Tab tab) { }
         });
+
+        View rootLayout = findViewById(android.R.id.content);
+
+        setupTouchListener(rootLayout);
+    }
+
+    private void setupTouchListener(View view) {
+        // Check if the view is not an EditText
+        if (!(view instanceof EditText)) {
+            view.setOnTouchListener((v, event) -> {
+                hideKeyboard();
+                return false;
+            });
+        }
+
+        // If the view is a ViewGroup and not a RecyclerView or ScrollView,
+        // set up touch listeners for its children
+        if (view instanceof ViewGroup && !(view instanceof RecyclerView)
+                && !(view instanceof ScrollView)) {
+            ViewGroup viewGroup = (ViewGroup) view;
+            for (int i = 0; i < viewGroup.getChildCount(); i++) {
+                View innerView = viewGroup.getChildAt(i);
+                setupTouchListener(innerView);
+            }
+        }
+    }
+
+    private void hideKeyboard() {
+        View view = getCurrentFocus();
+        if (view != null) {
+            InputMethodManager imm = (InputMethodManager)
+                    getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+            // Clear focus from the input field
+            view.clearFocus();
+        }
     }
 
     private void loadFragment(Fragment fragment) {

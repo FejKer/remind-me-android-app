@@ -1,11 +1,13 @@
 package me.omigo.remindme.events;
 
 import android.app.DatePickerDialog;
+import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -133,7 +135,38 @@ public class EventDialogFragment extends DialogFragment implements CustomTimePic
         Button saveButton = view.findViewById(R.id.saveButton);
         saveButton.setOnClickListener(v -> saveEvent());
 
+        setupDialogTouchListener(view);
+
         return view;
+    }
+
+    private void setupDialogTouchListener(View view) {
+        // Skip if view is EditText
+        if (!(view instanceof EditText)) {
+            view.setOnTouchListener((v, event) -> {
+                hideKeyboard();
+                return false;
+            });
+        }
+
+        // Handle ViewGroups
+        if (view instanceof ViewGroup) {
+            ViewGroup viewGroup = (ViewGroup) view;
+            for (int i = 0; i < viewGroup.getChildCount(); i++) {
+                View innerView = viewGroup.getChildAt(i);
+                setupDialogTouchListener(innerView);
+            }
+        }
+    }
+
+    private void hideKeyboard() {
+        View view = getDialog().getCurrentFocus();
+        if (view != null) {
+            InputMethodManager imm = (InputMethodManager)
+                    requireContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+            view.clearFocus();
+        }
     }
 
     private void setupRecurringUI(Event eventToEdit) {
