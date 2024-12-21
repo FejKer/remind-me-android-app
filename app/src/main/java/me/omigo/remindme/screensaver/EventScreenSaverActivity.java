@@ -9,11 +9,14 @@ import android.view.WindowManager;
 import android.widget.TextView;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -25,11 +28,18 @@ import me.omigo.remindme.events.EventDao;
 import me.omigo.remindme.events.RecurringEventCalculator;
 
 public class EventScreenSaverActivity extends BaseActivity {
-    private TextView eventsTextView;
+    private TextView clockTextView;
+    private TextView dateTextView;
+    private TextView moreEventsTextView;
+    private RecyclerView eventsRecyclerView;
     private ConstraintLayout backgroundLayout;
     private Handler updateHandler;
     private static final long UPDATE_INTERVAL = 60000; // Update every minute
     private EventDao eventDao;
+    private ScreenSaverEventAdapter eventAdapter;
+    private static final int MAX_VISIBLE_EVENTS = 5;
+    private static final DateTimeFormatter CLOCK_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("EEEE, d MMMM yyyy");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,8 +67,16 @@ public class EventScreenSaverActivity extends BaseActivity {
         setContentView(R.layout.activity_event_screen_saver);
 
         // Initialize views
-        eventsTextView = findViewById(R.id.eventsTextView);
+        clockTextView = findViewById(R.id.clockTextView);
+        dateTextView = findViewById(R.id.dateTextView);
+        eventsRecyclerView = findViewById(R.id.eventsRecyclerView);
+        moreEventsTextView = findViewById(R.id.moreEventsTextView);
         backgroundLayout = findViewById(R.id.backgroundLayout);
+
+        // Initialize RecyclerView
+        eventsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        eventAdapter = new ScreenSaverEventAdapter(new ArrayList<>());
+        eventsRecyclerView.setAdapter(eventAdapter);
 
         eventDao = AppDatabase.getDatabase(getApplicationContext()).eventDao();
 
@@ -105,8 +123,14 @@ public class EventScreenSaverActivity extends BaseActivity {
     }
 
     private void updateDisplay() {
+        // Update clock and date
+        LocalDateTime now = LocalDateTime.now();
+        clockTextView.setText(CLOCK_FORMATTER.format(now));
+        dateTextView.setText(DATE_FORMATTER.format(now));
+
         List<Event> upcomingEvents = getUpcomingEvents();
 
+        // Add recurring events
         for (var event : eventDao.getAllRecurringEvents()) {
             var recurringEvents = RecurringEventCalculator.generateRecurringEventInstances(event, LocalDate.now(), LocalDate.now().plusDays(3));
             recurringEvents = recurringEvents
@@ -116,52 +140,60 @@ public class EventScreenSaverActivity extends BaseActivity {
             upcomingEvents.addAll(recurringEvents);
         }
 
-        Log.d("recurring", "upcoming " + upcomingEvents);
+        // Sort events by date and time
+        upcomingEvents.sort((e1, e2) -> {
+            LocalDateTime dt1 = LocalDateTime.of(e1.getDate(), Optional.ofNullable(e1.getTime()).orElse(LocalTime.MIDNIGHT));
+            LocalDateTime dt2 = LocalDateTime.of(e2.getDate(), Optional.ofNullable(e2.getTime()).orElse(LocalTime.MIDNIGHT));
+            return dt1.compareTo(dt2);
+        });
+
+        // Update RecyclerView
         if (upcomingEvents.isEmpty()) {
-            eventsTextView.setText("Brak wydarzeń w ciągu 3 dni");
-            setBackgroundColor(false);
+            eventsRecyclerView.setVisibility(View.GONE);
+            moreEventsTextView.setVisibility(View.GONE);
             return;
         }
 
-        boolean hasEventWithin24Hours = false;
-        StringBuilder displayText = new StringBuilder();
+        eventsRecyclerView.setVisibility(View.VISIBLE);
 
-        for (Event event : upcomingEvents) {
-            LocalDateTime localDateTime = LocalDateTime.of(event.getDate(), Optional.ofNullable(event.getTime()).orElse(LocalTime.of(0, 0, 0)));
-
-            if (localDateTime.isBefore(LocalDateTime.now().plusHours(24)) || localDateTime.isEqual(LocalDateTime.now().plusHours(24))) {
-                hasEventWithin24Hours = true;
-            }
-
-            displayText.append(formatEventDisplay(event)).append("\n\n");
+        // Show limited number of events
+        List<Event> visibleEvents;
+        if (upcomingEvents.size() > MAX_VISIBLE_EVENTS) {
+            visibleEvents = upcomingEvents.subList(0, MAX_VISIBLE_EVENTS);
+            moreEventsTextView.setVisibility(View.VISIBLE);
+            moreEventsTextView.setText("+ " + (upcomingEvents.size() - MAX_VISIBLE_EVENTS) + " więcej wydarzeń");
+        } else {
+            visibleEvents = upcomingEvents;
+            moreEventsTextView.setVisibility(View.GONE);
         }
 
-        eventsTextView.setText(displayText.toString().trim());
+        eventAdapter.updateEvents(visibleEvents);
+
+        // Update background color based on events within 24 hours
+        boolean hasEventWithin24Hours = upcomingEvents.stream().anyMatch(event -> {
+            LocalDateTime eventDateTime = LocalDateTime.of(
+                    event.getDate(),
+                    Optional.ofNullable(event.getTime()).orElse(LocalTime.MIDNIGHT)
+            );
+            return eventDateTime.isBefore(LocalDateTime.now().plusHours(24));
+        });
+
         setBackgroundColor(hasEventWithin24Hours);
     }
 
     private void setBackgroundColor(boolean hasEventWithin24Hours) {
         if (hasEventWithin24Hours) {
             backgroundLayout.setBackgroundColor(Color.WHITE);
-            eventsTextView.setTextColor(Color.BLACK);
+            clockTextView.setTextColor(Color.BLACK);
+            dateTextView.setTextColor(Color.BLACK);
+            moreEventsTextView.setTextColor(Color.BLACK);
+            findViewById(R.id.divider).setBackgroundColor(Color.BLACK);
         } else {
             backgroundLayout.setBackgroundColor(Color.BLACK);
-            eventsTextView.setTextColor(Color.WHITE);
-        }
-    }
-
-    private String formatEventDisplay(Event event) {
-        DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
-        DateTimeFormatter dateOnlyFormat = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-
-        String title = event.getTitle();
-        LocalTime time = event.getTime();
-        LocalDate date = event.getDate();
-
-        if (time != null) {
-            return title + "\n" + dateFormat.format(LocalDateTime.of(date, time));
-        } else {
-            return title + "\n" + dateOnlyFormat.format(date) + " całodniowe";
+            clockTextView.setTextColor(Color.WHITE);
+            dateTextView.setTextColor(Color.WHITE);
+            moreEventsTextView.setTextColor(Color.WHITE);
+            findViewById(R.id.divider).setBackgroundColor(Color.WHITE);
         }
     }
 
