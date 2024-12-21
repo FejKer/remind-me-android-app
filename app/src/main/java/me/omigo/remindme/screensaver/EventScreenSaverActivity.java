@@ -37,7 +37,7 @@ public class EventScreenSaverActivity extends BaseActivity {
     private static final long UPDATE_INTERVAL = 60000; // Update every minute
     private EventDao eventDao;
     private ScreenSaverEventAdapter eventAdapter;
-    private static final int MAX_VISIBLE_EVENTS = 5;
+    private static final int MAX_VISIBLE_EVENTS = 3;
     private static final DateTimeFormatter CLOCK_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("EEEE, d MMMM yyyy");
 
@@ -184,6 +184,10 @@ public class EventScreenSaverActivity extends BaseActivity {
             );
             return eventDateTime.isBefore(LocalDateTime.now().plusHours(24));
         });
+
+
+        int color = hasEventWithin24Hours ? Color.BLACK : Color.WHITE;
+        moreEventsTextView.setTextColor(color);
 
         setColor(hasEventWithin24Hours);
 
