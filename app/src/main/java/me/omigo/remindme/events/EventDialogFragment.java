@@ -295,8 +295,8 @@ public class EventDialogFragment extends DialogFragment implements CustomTimePic
     }
 
     private void saveEvent() {
-        String title = editTitle.getText().toString();
-        String place = editPlace.getText().toString();
+        String title = editTitle.getText().toString().trim();
+        String place = editPlace.getText().toString().trim();
 
         if (title.isEmpty() || selectedDate == null) {
             Toast.makeText(requireContext(), "Wypełnij wymagany tytuł oraz datę", Toast.LENGTH_LONG).show();

@@ -15,7 +15,7 @@ public interface EventDao {
     @Query("SELECT * FROM events WHERE deleted IS FALSE ORDER BY date ASC, time ASC")
     List<Event> getAllEvents();
 
-    @Query("SELECT * FROM events WHERE date <=:nowPlus72Hours AND date >=:today AND deleted IS FALSE ORDER BY date ASC, time ASC")
+    @Query("SELECT * FROM events WHERE date <=:nowPlus72Hours AND date >=:today AND deleted IS FALSE AND isHiddenFromScreenSaver IS FALSE ORDER BY date ASC, time ASC")
     List<Event> getEventsWithin72Hours(Long nowPlus72Hours, Long today);
 
     @Query("DELETE FROM events")
