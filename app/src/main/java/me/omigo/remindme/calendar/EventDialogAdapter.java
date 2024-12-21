@@ -1,4 +1,4 @@
-package me.omigo.remindme.events;
+package me.omigo.remindme.calendar;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.Optional;
 
 import me.omigo.remindme.R;
+import me.omigo.remindme.events.Event;
+import me.omigo.remindme.events.Priority;
 
 public class EventDialogAdapter extends RecyclerView.Adapter<EventDialogAdapter.ViewHolder> {
     private List<Event> events;

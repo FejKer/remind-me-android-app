@@ -4,15 +4,14 @@ import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.view.WindowManager;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.tabs.TabLayout;
 
 import me.omigo.remindme.calendar.CalendarFragment;
-import me.omigo.remindme.events.BaseActivity;
 import me.omigo.remindme.listview.ListFragment;
 import me.omigo.remindme.recurring.RecurringEventsFragment;
+import me.omigo.remindme.screensaver.BaseActivity;
 
 public class MainActivity extends BaseActivity {
 

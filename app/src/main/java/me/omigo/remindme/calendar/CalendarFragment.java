@@ -26,7 +26,6 @@ import me.omigo.remindme.AppDatabase;
 import me.omigo.remindme.R;
 import me.omigo.remindme.events.Event;
 import me.omigo.remindme.events.EventDao;
-import me.omigo.remindme.events.EventDialogAdapter;
 import me.omigo.remindme.events.EventDialogFragment;
 import me.omigo.remindme.events.Priority;
 import me.omigo.remindme.events.RecurringEventCalculator;

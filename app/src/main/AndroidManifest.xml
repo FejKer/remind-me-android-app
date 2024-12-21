@@ -22,7 +22,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".events.EventScreenSaverActivity"
+            android:name=".screensaver.EventScreenSaverActivity"
             android:theme="@style/Theme.AppCompat.NoActionBar"
             android:screenOrientation="landscape"
             android:exported="false">

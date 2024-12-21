@@ -1,4 +1,4 @@
-package me.omigo.remindme.events;
+package me.omigo.remindme.screensaver;
 
 import android.graphics.Color;
 import android.os.Bundle;
@@ -7,23 +7,19 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.TextView;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 
 import me.omigo.remindme.AppDatabase;
 import me.omigo.remindme.R;
+import me.omigo.remindme.events.Event;
+import me.omigo.remindme.events.EventDao;
 
 public class EventScreenSaverActivity extends BaseActivity {
     private TextView eventsTextView;

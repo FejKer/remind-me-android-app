@@ -1,4 +1,4 @@
-package me.omigo.remindme.events;
+package me.omigo.remindme.screensaver;
 
 import android.content.Intent;
 import android.os.Bundle;
