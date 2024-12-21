@@ -48,27 +48,31 @@
                         android:layout_marginEnd="8dp">
 
                         <com.google.android.material.textfield.TextInputLayout
-                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginBottom="8dp">
+                            android:layout_marginBottom="8dp"
+                            app:endIconMode="clear_text">
 
-                            <com.google.android.material.textfield.TextInputEditText
+                            <com.google.android.material.textfield.MaterialAutoCompleteTextView
                                 android:id="@+id/editTitle"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
+                                android:inputType="text"
                                 android:hint="Tytuł (wymagane)" />
                         </com.google.android.material.textfield.TextInputLayout>
 
                         <com.google.android.material.textfield.TextInputLayout
-                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content">
+                            android:layout_height="wrap_content"
+                            app:endIconMode="clear_text">
 
-                            <com.google.android.material.textfield.TextInputEditText
+                            <com.google.android.material.textfield.MaterialAutoCompleteTextView
                                 android:id="@+id/editPlace"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
+                                android:inputType="text"
                                 android:hint="Miejsce" />
                         </com.google.android.material.textfield.TextInputLayout>
                     </LinearLayout>
@@ -78,7 +82,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:orientation="vertical"
-                        android:layout_marginStart="8dp">
+                        android:layout_marginStart="4dp">
 
 <!--                        <TextView-->
 <!--                            android:layout_width="match_parent"-->
@@ -100,7 +104,7 @@
                             android:layout_height="wrap_content"
                             android:gravity="center"
                             android:text="Brak daty (wymagana)"
-                            android:layout_marginBottom="8dp" />
+                            android:layout_marginBottom="2dp" />
 
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/timePickerButton"
@@ -123,7 +127,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Wydarzenie cykliczne?"
-                    android:layout_marginTop="16dp" />
+                    android:layout_marginTop="4dp"
+                    app:trackTint="@color/switch_track_selector" />
 
                 <LinearLayout
                     android:id="@+id/recurringOptionsLayout"
@@ -136,7 +141,7 @@
                         android:id="@+id/recurringTypeGroup"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp">
+                        android:layout_marginTop="4dp">
 
                         <RadioButton
                             android:id="@+id/customRecurring"
@@ -149,7 +154,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:orientation="horizontal"
-                            android:layout_marginStart="32dp"
+                            android:layout_marginStart="16dp"
                             android:visibility="gone">
 
                             <com.google.android.material.textfield.TextInputLayout
@@ -189,8 +194,17 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Wydarzenie ważne?"
-                    android:layout_marginTop="16dp"
-                    android:layout_marginBottom="16dp" />
+                    android:layout_marginTop="4dp"
+                    app:trackTint="@color/switch_track_selector" />
+
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/isHiddenFromScreenSaver"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Wydarzenie ukryte na wygaszaczu ekranu?"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginBottom="4dp"
+                    app:trackTint="@color/switch_track_selector" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/saveButton"

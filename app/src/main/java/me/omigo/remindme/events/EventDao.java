@@ -38,4 +38,10 @@ public interface EventDao {
 
     @Query("UPDATE events SET deleted = TRUE WHERE id =:id")
     void delete(Long id);
+
+    @Query("SELECT title FROM events WHERE title LIKE :s")
+    List<String> getSimilarTitles(String s);
+
+    @Query("SELECT place FROM events WHERE place LIKE :s")
+    List<String> getSimilarPlaces(String s);
 }

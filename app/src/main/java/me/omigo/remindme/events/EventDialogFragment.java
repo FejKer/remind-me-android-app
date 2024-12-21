@@ -3,6 +3,8 @@ package me.omigo.remindme.events;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,10 +23,12 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
 import com.google.android.material.switchmaterial.SwitchMaterial;
+import com.google.android.material.textfield.MaterialAutoCompleteTextView;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -35,7 +39,7 @@ import me.omigo.remindme.R;
 
 public class EventDialogFragment extends DialogFragment implements CustomTimePickerDialog.OnTimeSelectedListener {
 
-    private EditText editTitle, editPlace;
+    private MaterialAutoCompleteTextView editTitle, editPlace;
     private TextView dateTextView, timeTextView;
     private SwitchMaterial isImportantSwitch;
     private LocalDate selectedDate;
@@ -84,6 +88,11 @@ public class EventDialogFragment extends DialogFragment implements CustomTimePic
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.event_dialog, container, false);
+
+
+        appDatabase = AppDatabase.getDatabase(requireContext());
+        eventDao = appDatabase.eventDao();
+
 
         editTitle = view.findViewById(R.id.editTitle);
         editPlace = view.findViewById(R.id.editPlace);
@@ -137,7 +146,77 @@ public class EventDialogFragment extends DialogFragment implements CustomTimePic
 
         setupDialogTouchListener(view);
 
+        setupAutoComplete();
+
         return view;
+    }
+
+    private void setupAutoComplete() {
+        // Create adapters for both fields
+        ArrayAdapter<String> titleAdapter = new ArrayAdapter<>(
+                requireContext(),
+                android.R.layout.simple_dropdown_item_1line,
+                new ArrayList<>()
+        );
+
+        ArrayAdapter<String> placeAdapter = new ArrayAdapter<>(
+                requireContext(),
+                android.R.layout.simple_dropdown_item_1line,
+                new ArrayList<>()
+        );
+
+        // Set adapters
+        editTitle.setAdapter(titleAdapter);
+        editPlace.setAdapter(placeAdapter);
+
+        // Set threshold (number of characters before showing suggestions)
+        editTitle.setThreshold(1);
+        editPlace.setThreshold(1);
+
+        // Add text change listeners
+        editTitle.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (s.length() >= 1) {
+                    new Thread(() -> {
+                        List<String> suggestions = eventDao.getSimilarTitles("%" + s + "%");
+                        requireActivity().runOnUiThread(() -> {
+                            titleAdapter.clear();
+                            titleAdapter.addAll(suggestions);
+                            titleAdapter.notifyDataSetChanged();
+                        });
+                    }).start();
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+        });
+
+        editPlace.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (s.length() >= 1) {
+                    new Thread(() -> {
+                        List<String> suggestions = eventDao.getSimilarPlaces("%" + s + "%");
+                        requireActivity().runOnUiThread(() -> {
+                            placeAdapter.clear();
+                            placeAdapter.addAll(suggestions);
+                            placeAdapter.notifyDataSetChanged();
+                        });
+                    }).start();
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+        });
     }
 
     private void setupDialogTouchListener(View view) {
@@ -212,9 +291,6 @@ public class EventDialogFragment extends DialogFragment implements CustomTimePic
                 return;
             }
         }
-
-        appDatabase = AppDatabase.getDatabase(requireContext());
-        eventDao = appDatabase.eventDao();
 
         Event event;
         if (isEditing) {
