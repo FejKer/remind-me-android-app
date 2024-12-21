@@ -1,5 +1,6 @@
 package me.omigo.remindme.screensaver;
 
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,6 +9,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
@@ -16,10 +18,12 @@ import java.util.List;
 import me.omigo.remindme.R;
 import me.omigo.remindme.events.Event;
 
-public class ScreenSaverEventAdapter extends RecyclerView.Adapter<ScreenSaverEventAdapter.EventViewHolder> {
+public class ScreenSaverEventAdapter extends RecyclerView.Adapter<ScreenSaverEventAdapter.EventViewHolder> implements EventScreenSaverActivity.BackgroundColorListener {
     private List<Event> events;
+    private int textColor;
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+
 
     public ScreenSaverEventAdapter(List<Event> events) {
         this.events = events;
@@ -50,10 +54,17 @@ public class ScreenSaverEventAdapter extends RecyclerView.Adapter<ScreenSaverEve
         }
 
         long daysUntil = ChronoUnit.DAYS.between(LocalDateTime.now(), eventDateTime);
+
+        // Set text color based on time until event
+        holder.daysLeftTextView.setTextColor(textColor);
+        holder.titleTextView.setTextColor(textColor);
+        holder.timeTextView.setTextColor(textColor);
+
+        // Calculate days text
         String daysText;
-        if (daysUntil == 0) {
+        if (daysUntil == 0 && event.getDate().isEqual(LocalDate.now())) {
             daysText = "Dziś";
-        } else if (daysUntil == 1) {
+        } else if (daysUntil == 1 || (daysUntil == 0 && !event.getDate().isEqual(LocalDate.now()))) {
             daysText = "Jutro";
         } else {
             daysText = "Za " + daysUntil + " dni";
@@ -69,6 +80,11 @@ public class ScreenSaverEventAdapter extends RecyclerView.Adapter<ScreenSaverEve
     public void updateEvents(List<Event> newEvents) {
         this.events = newEvents;
         notifyDataSetChanged();
+    }
+
+    @Override
+    public void setColor(int textColor) {
+        this.textColor = textColor;
     }
 
     static class EventViewHolder extends RecyclerView.ViewHolder {

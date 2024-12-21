@@ -41,6 +41,12 @@ public class EventScreenSaverActivity extends BaseActivity {
     private static final DateTimeFormatter CLOCK_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("EEEE, d MMMM yyyy");
 
+    private BackgroundColorListener listener;
+
+    public interface BackgroundColorListener {
+        void setColor(int textColor);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -76,6 +82,7 @@ public class EventScreenSaverActivity extends BaseActivity {
         // Initialize RecyclerView
         eventsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         eventAdapter = new ScreenSaverEventAdapter(new ArrayList<>());
+        listener = eventAdapter;
         eventsRecyclerView.setAdapter(eventAdapter);
 
         eventDao = AppDatabase.getDatabase(getApplicationContext()).eventDao();
@@ -178,6 +185,8 @@ public class EventScreenSaverActivity extends BaseActivity {
             return eventDateTime.isBefore(LocalDateTime.now().plusHours(24));
         });
 
+        setColor(hasEventWithin24Hours);
+
         setBackgroundColor(hasEventWithin24Hours);
     }
 
@@ -203,5 +212,11 @@ public class EventScreenSaverActivity extends BaseActivity {
         var nowPlus72Hours = today.plusDays(3).toEpochDay();
         Log.d("recurring", "querying for " + nowPlus72Hours);
         return eventDao.getEventsWithin72Hours(nowPlus72Hours, now);
+    }
+
+    public void setColor(Boolean hasEventWithin24Hours) {
+        Log.d("recurring", "sending event of set color with " + hasEventWithin24Hours);
+        int color = hasEventWithin24Hours ? Color.BLACK : Color.WHITE;
+        listener.setColor(color);
     }
 }
