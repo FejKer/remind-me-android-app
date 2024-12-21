@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/materialCardView"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/materialCardView"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginHorizontal="8dp"
     android:layout_marginVertical="4dp"
     app:cardCornerRadius="12dp"
     app:cardElevation="4dp"
-    app:strokeWidth="1dp"
-    app:strokeColor="#DDDDDD">
+    app:strokeColor="#DDDDDD"
+    app:strokeWidth="1dp">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -56,33 +56,50 @@
                     android:textAppearance="?attr/textAppearanceBody2" />
             </LinearLayout>
 
-            <TextView
-                android:id="@+id/eventImportanceText"
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:textAppearance="?attr/textAppearanceCaption"
-                android:textColor="?attr/colorPrimary" />
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
 
-            <ImageView
-                android:id="@+id/imageViewRecurring"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:layout_marginStart="8dp"
-                android:src="@drawable/ic_repeat"
-                android:visibility="gone"
-                app:tint="?attr/colorPrimary"
-                android:contentDescription="Recurring event" />
+                <TextView
+                    android:id="@+id/eventImportanceText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:textAppearance="?attr/textAppearanceCaption"
+                    android:textColor="?attr/colorPrimary" />
 
-            <ImageView
-                android:id="@+id/imageViewScreenSaverHidden"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:layout_marginStart="8dp"
-                android:src="@drawable/ic_screensaver_hidden"
-                android:visibility="gone"
-                app:tint="?attr/colorPrimary"
-                android:contentDescription="Hidden from screen saver" />
+                <ImageView
+                    android:id="@+id/imageViewRecurring"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_marginStart="8dp"
+                    android:contentDescription="Recurring event"
+                    android:src="@drawable/ic_repeat"
+                    android:visibility="gone"
+                    app:tint="?attr/colorPrimary" />
+
+                <TextView
+                    android:id="@+id/textViewRecurring"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:textAppearance="?attr/textAppearanceCaption"
+                    android:textColor="?attr/colorPrimary"
+                    android:visibility="gone" />
+
+                <ImageView
+                    android:id="@+id/imageViewScreenSaverHidden"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_marginStart="8dp"
+                    android:contentDescription="Hidden from screen saver"
+                    android:src="@drawable/ic_screensaver_hidden"
+                    android:visibility="gone"
+                    app:tint="?attr/colorPrimary" />
+            </LinearLayout>
         </LinearLayout>
 
         <ImageButton

@@ -77,11 +77,14 @@ public class EventDialogAdapter extends RecyclerView.Adapter<EventDialogAdapter.
 
 
         holder.recurringImageView.setVisibility(View.GONE);
+        holder.textViewRecurring.setVisibility(View.GONE);
 
 
         if (event.getParentEventId() != null && !event.getParentEventId().equals(0L)) {
             holder.editButton.setVisibility(View.GONE);
             holder.recurringImageView.setVisibility(View.VISIBLE);
+            holder.textViewRecurring.setVisibility(View.VISIBLE);
+            holder.textViewRecurring.setText(String.format("Powtarza się co %d %s", event.getRecurringValue(), event.getRecurringTimeUnit().getLabel()));
         }
 
         holder.editButton.setOnClickListener(v -> {
@@ -151,7 +154,7 @@ public class EventDialogAdapter extends RecyclerView.Adapter<EventDialogAdapter.
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView titleText, placeText, dateText, timeText, importanceText;
+        TextView titleText, placeText, dateText, timeText, importanceText, textViewRecurring;
         ImageButton editButton;
         ImageView recurringImageView;
         ImageView hiddenFromScreenSaverImageView;
@@ -168,6 +171,7 @@ public class EventDialogAdapter extends RecyclerView.Adapter<EventDialogAdapter.
             recurringImageView = view.findViewById(R.id.imageViewRecurring);
             materialCardView = view.findViewById(R.id.materialCardView);
             hiddenFromScreenSaverImageView = view.findViewById(R.id.imageViewScreenSaverHidden);
+            textViewRecurring = view.findViewById(R.id.textViewRecurring);
         }
     }
 }

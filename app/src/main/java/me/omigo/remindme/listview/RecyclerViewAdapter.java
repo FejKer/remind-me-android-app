@@ -74,6 +74,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         public TextView textViewDate;
         public TextView textViewTime;
         public TextView textViewIsImportant;
+        public TextView textViewRecurring;
         public ImageButton editButton;
         public ImageButton deleteButton;
         public ImageView imageViewRecurring;
@@ -94,6 +95,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             materialCardView = itemView.findViewById(R.id.materialCardView);
             deleteButton = itemView.findViewById(R.id.deleteButton);
             imageViewIsHidden = itemView.findViewById(R.id.imageViewScreenSaverHidden);
+            textViewRecurring = itemView.findViewById(R.id.textViewRecurring);
         }
     }
 
@@ -185,8 +187,12 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             }
         });
 
+        holder.textViewRecurring.setVisibility(View.GONE);
+
         if (event.getRecurring() || (event.getParentEventId() != null && !event.getParentEventId().equals(0L))) {
             holder.imageViewRecurring.setVisibility(View.VISIBLE);
+            holder.textViewRecurring.setVisibility(View.VISIBLE);
+            holder.textViewRecurring.setText(String.format("Powtarza się co %d %s", event.getRecurringValue(), event.getRecurringTimeUnit().getLabel()));
         }
 
         holder.editButton.setVisibility(View.VISIBLE);

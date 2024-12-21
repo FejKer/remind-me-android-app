@@ -32,6 +32,8 @@ public class RecurringEventCalculator {
                 instance.setTime(time);
                 instance.setParentEventId(parentEvent.getId());
                 instance.setRecurring(false);
+                instance.setRecurringTimeUnit(parentEvent.getRecurringTimeUnit());
+                instance.setRecurringValue(parentEvent.getRecurringValue());
                 instance.setHiddenFromScreenSaver(parentEvent.getHiddenFromScreenSaver());
                 instances.add(instance);
                 Log.d("recurring", "adding");
