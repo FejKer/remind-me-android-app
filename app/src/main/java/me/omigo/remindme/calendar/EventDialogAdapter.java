@@ -75,12 +75,13 @@ public class EventDialogAdapter extends RecyclerView.Adapter<EventDialogAdapter.
                 holder.itemView.getContext().getColor(android.R.color.holo_red_dark) :
                 holder.itemView.getContext().getColor(android.R.color.darker_gray));
 
-        if (event.getRecurring()) {
-            holder.recurringImageView.setVisibility(View.VISIBLE);
-        }
+
+        holder.recurringImageView.setVisibility(View.GONE);
+
 
         if (event.getParentEventId() != null && !event.getParentEventId().equals(0L)) {
             holder.editButton.setVisibility(View.GONE);
+            holder.recurringImageView.setVisibility(View.VISIBLE);
         }
 
         holder.editButton.setOnClickListener(v -> {
@@ -88,6 +89,8 @@ public class EventDialogAdapter extends RecyclerView.Adapter<EventDialogAdapter.
                 editListener.onEventEdit(event);
             }
         });
+
+        holder.hiddenFromScreenSaverImageView.setVisibility(event.getHiddenFromScreenSaver() ? View.VISIBLE: View.GONE);
 
         if (event.getPriority() == Priority.IMPORTANT) {
             Context context = holder.itemView.getContext();
@@ -151,6 +154,7 @@ public class EventDialogAdapter extends RecyclerView.Adapter<EventDialogAdapter.
         TextView titleText, placeText, dateText, timeText, importanceText;
         ImageButton editButton;
         ImageView recurringImageView;
+        ImageView hiddenFromScreenSaverImageView;
         MaterialCardView materialCardView;
 
         ViewHolder(View view) {
@@ -163,6 +167,7 @@ public class EventDialogAdapter extends RecyclerView.Adapter<EventDialogAdapter.
             editButton = view.findViewById(R.id.editButton);
             recurringImageView = view.findViewById(R.id.imageViewRecurring);
             materialCardView = view.findViewById(R.id.materialCardView);
+            hiddenFromScreenSaverImageView = view.findViewById(R.id.imageViewScreenSaverHidden);
         }
     }
 }

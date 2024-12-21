@@ -66,13 +66,23 @@
 
             <ImageView
                 android:id="@+id/imageViewRecurring"
-                android:layout_width="16dp"
-                android:layout_height="16dp"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
                 android:layout_marginStart="8dp"
                 android:src="@drawable/ic_repeat"
                 android:visibility="gone"
                 app:tint="?attr/colorPrimary"
                 android:contentDescription="Recurring event" />
+
+            <ImageView
+                android:id="@+id/imageViewScreenSaverHidden"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_marginStart="8dp"
+                android:src="@drawable/ic_screensaver_hidden"
+                android:visibility="gone"
+                app:tint="?attr/colorPrimary"
+                android:contentDescription="Hidden from screen saver" />
         </LinearLayout>
 
         <ImageButton
