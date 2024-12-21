@@ -16,6 +16,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import me.omigo.remindme.AppDatabase;
 import me.omigo.remindme.R;
@@ -108,6 +109,10 @@ public class EventScreenSaverActivity extends BaseActivity {
 
         for (var event : eventDao.getAllRecurringEvents()) {
             var recurringEvents = RecurringEventCalculator.generateRecurringEventInstances(event, LocalDate.now(), LocalDate.now().plusDays(3));
+            recurringEvents = recurringEvents
+                    .stream()
+                    .filter(e -> !e.getHiddenFromScreenSaver())
+                    .collect(Collectors.toUnmodifiableList());
             upcomingEvents.addAll(recurringEvents);
         }
 
