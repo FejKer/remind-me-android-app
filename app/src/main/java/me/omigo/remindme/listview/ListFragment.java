@@ -1,10 +1,13 @@
 package me.omigo.remindme.listview;
 
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.core.widget.NestedScrollView;
@@ -40,6 +43,11 @@ public class ListFragment extends Fragment implements EventDialogFragment.EventD
     private RecyclerViewAdapter pastEventsAdapter;
     private RecyclerViewAdapter upcomingEventsAdapter;
     private RecyclerViewAdapter futureEventsAdapter;
+    private List<Event> allPastEvents = new ArrayList<>();
+    private List<Event> allUpcomingEvents = new ArrayList<>();
+    private List<Event> allFutureEvents = new ArrayList<>();
+    private EditText searchEditText;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -68,6 +76,57 @@ public class ListFragment extends Fragment implements EventDialogFragment.EventD
         currentEventsTextView = view.findViewById(R.id.currentEventsLabel);
         appDatabase = AppDatabase.getDatabase(requireContext());
         eventDao = appDatabase.eventDao();
+
+        searchEditText = view.findViewById(R.id.searchEditText);
+        setupSearchListener();
+    }
+
+    private void setupSearchListener() {
+        searchEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                filterEvents(s.toString().toLowerCase().trim());
+            }
+        });
+    }
+
+    private void filterEvents(String query) {
+        // Filter past events
+        List<Event> filteredPastEvents = allPastEvents.stream()
+                .filter(event -> eventMatchesQuery(event, query))
+                .collect(Collectors.toList());
+
+        // Filter upcoming events
+        List<Event> filteredUpcomingEvents = allUpcomingEvents.stream()
+                .filter(event -> eventMatchesQuery(event, query))
+                .collect(Collectors.toList());
+
+        // Filter future events
+        List<Event> filteredFutureEvents = allFutureEvents.stream()
+                .filter(event -> eventMatchesQuery(event, query))
+                .collect(Collectors.toList());
+
+        // Update adapters
+        updateAdapter(pastEventsAdapter, filteredPastEvents);
+        updateAdapter(upcomingEventsAdapter, filteredUpcomingEvents);
+        updateAdapter(futureEventsAdapter, filteredFutureEvents);
+    }
+
+    private boolean eventMatchesQuery(Event event, String query) {
+        if (query.isEmpty()) {
+            return true;
+        }
+        return (event.getTitle() != null && event.getTitle().toLowerCase().contains(query)) ||
+                (event.getPlace() != null && event.getPlace().toLowerCase().contains(query));
+//                event.getDate().toString().toLowerCase().contains(query) ||
+//                (event.getTime() != null && event.getTime().toString().toLowerCase().contains(query)) ||
+//                (event.getPriority() != null && event.getPriority().getLabel().toLowerCase().contains(query));
     }
 
     private void setupRecyclerViews() {
@@ -111,6 +170,11 @@ public class ListFragment extends Fragment implements EventDialogFragment.EventD
         List<Event> upcomingEvents = new ArrayList<>();
         List<Event> futureEvents = new ArrayList<>();
 
+        // Clear the stored lists
+        allPastEvents.clear();
+        allUpcomingEvents.clear();
+        allFutureEvents.clear();
+
         // First, separate regular events
         for (Event event : allEvents) {
             if (!event.getRecurring()) {
@@ -137,7 +201,7 @@ public class ListFragment extends Fragment implements EventDialogFragment.EventD
 //                pastEvents.addAll(pastInstances);
 
                 // Generate upcoming instances
-// First, get all upcoming events within a month
+                // First, get all upcoming events within a month
                 List<Event> upcomingInstances = RecurringEventCalculator.generateRecurringEventInstances(
                                 event,
                                 today,
@@ -145,11 +209,11 @@ public class ListFragment extends Fragment implements EventDialogFragment.EventD
                         ).stream()
                         .collect(Collectors.toUnmodifiableList());
 
-// Get the closest upcoming event (if any)
+                // Get the closest upcoming event (if any)
                 Optional<Event> closestUpcoming = upcomingInstances.stream()
                         .min(Comparator.comparing(Event::getDate));
 
-// If today has an event, we want today's and next closest
+                // If today has an event, we want today's and next closest
                 if (closestUpcoming.isPresent() && closestUpcoming.get().getDate().equals(today)) {
                     // Keep today's event
                     upcomingEvents.add(closestUpcoming.get());
@@ -179,10 +243,21 @@ public class ListFragment extends Fragment implements EventDialogFragment.EventD
             }
         }
 
-        // Update adapters
-        updateAdapter(pastEventsAdapter, pastEvents);
-        updateAdapter(upcomingEventsAdapter, upcomingEvents);
-        updateAdapter(futureEventsAdapter, futureEvents);
+        // Store the full lists before filtering
+        allPastEvents.addAll(pastEvents);
+        allUpcomingEvents.addAll(upcomingEvents);
+        allFutureEvents.addAll(futureEvents);
+
+        // Apply any existing filter
+        String currentQuery = searchEditText.getText().toString().toLowerCase().trim();
+        if (!currentQuery.isEmpty()) {
+            filterEvents(currentQuery);
+        } else {
+            // Update adapters with full lists if no filter
+            updateAdapter(pastEventsAdapter, pastEvents);
+            updateAdapter(upcomingEventsAdapter, upcomingEvents);
+            updateAdapter(futureEventsAdapter, futureEvents);
+        }
     }
 
     private void categorizeEvent(Event event, LocalDate today, LocalDate oneMonthFromNow,
