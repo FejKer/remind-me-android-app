@@ -158,6 +158,14 @@ public class ListFragment extends Fragment implements EventDialogFragment.EventD
             dialogFragment.setEventDialogListener(this);
             dialogFragment.show(getParentFragmentManager(), "EventDialogFragment");
         });
+
+        adapter.setOnEventDeleteListener(event -> {
+            eventDao.delete(event.getId());
+
+            //adapter.deleteEvent(event);
+
+            updateEvents();
+        });
     }
 
     private void updateEvents() {

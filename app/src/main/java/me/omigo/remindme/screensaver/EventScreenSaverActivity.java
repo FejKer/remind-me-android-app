@@ -3,6 +3,7 @@ package me.omigo.remindme.screensaver;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.TextView;
@@ -20,6 +21,7 @@ import me.omigo.remindme.AppDatabase;
 import me.omigo.remindme.R;
 import me.omigo.remindme.events.Event;
 import me.omigo.remindme.events.EventDao;
+import me.omigo.remindme.events.RecurringEventCalculator;
 
 public class EventScreenSaverActivity extends BaseActivity {
     private TextView eventsTextView;
@@ -103,6 +105,13 @@ public class EventScreenSaverActivity extends BaseActivity {
 
     private void updateDisplay() {
         List<Event> upcomingEvents = getUpcomingEvents();
+
+        for (var event : eventDao.getAllRecurringEvents()) {
+            var recurringEvents = RecurringEventCalculator.generateRecurringEventInstances(event, LocalDate.now(), LocalDate.now().plusDays(3));
+            upcomingEvents.addAll(recurringEvents);
+        }
+
+        Log.d("recurring", "upcoming " + upcomingEvents);
         if (upcomingEvents.isEmpty()) {
             eventsTextView.setText("Brak wydarzeń w ciągu 3 dni");
             setBackgroundColor(false);
@@ -113,7 +122,7 @@ public class EventScreenSaverActivity extends BaseActivity {
         StringBuilder displayText = new StringBuilder();
 
         for (Event event : upcomingEvents) {
-            LocalDateTime localDateTime = LocalDateTime.of(event.getDate(), Optional.ofNullable(event.getTime()).orElse(LocalTime.of(0,0,0)));
+            LocalDateTime localDateTime = LocalDateTime.of(event.getDate(), Optional.ofNullable(event.getTime()).orElse(LocalTime.of(0, 0, 0)));
 
             if (localDateTime.isBefore(LocalDateTime.now().plusHours(24)) || localDateTime.isEqual(LocalDateTime.now().plusHours(24))) {
                 hasEventWithin24Hours = true;
@@ -152,7 +161,10 @@ public class EventScreenSaverActivity extends BaseActivity {
     }
 
     private List<Event> getUpcomingEvents() {
-        var nowPlus72Hours = LocalDate.now().plusDays(3).toEpochDay();
-        return eventDao.getEventsWithin72Hours(nowPlus72Hours);
+        LocalDate today = LocalDate.now();
+        var now = today.toEpochDay();
+        var nowPlus72Hours = today.plusDays(3).toEpochDay();
+        Log.d("recurring", "querying for " + nowPlus72Hours);
+        return eventDao.getEventsWithin72Hours(nowPlus72Hours, now);
     }
 }

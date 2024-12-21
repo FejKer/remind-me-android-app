@@ -63,6 +63,14 @@ public class RecurringEventsFragment extends Fragment implements EventDialogFrag
             dialogFragment.setEventDialogListener(this);
             dialogFragment.show(getParentFragmentManager(), "EventDialogFragment");
         });
+
+        adapter.setOnEventDeleteListener(event -> {
+            eventDao.delete(event.getId());
+
+            //adapter.deleteEvent(event);
+
+            updateEvents();
+        });
     }
 
     private void updateEvents() {

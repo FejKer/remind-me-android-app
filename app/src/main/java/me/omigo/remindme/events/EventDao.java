@@ -12,16 +12,16 @@ public interface EventDao {
     @Insert
     long insert(Event event);
 
-    @Query("SELECT * FROM events ORDER BY date ASC, time ASC")
+    @Query("SELECT * FROM events WHERE deleted IS FALSE ORDER BY date ASC, time ASC")
     List<Event> getAllEvents();
 
-    @Query("SELECT * FROM events WHERE date <=:nowPlus72Hours ORDER BY date ASC, time ASC")
-    List<Event> getEventsWithin72Hours(Long nowPlus72Hours);
+    @Query("SELECT * FROM events WHERE date <=:nowPlus72Hours AND date >=:today AND deleted IS FALSE ORDER BY date ASC, time ASC")
+    List<Event> getEventsWithin72Hours(Long nowPlus72Hours, Long today);
 
     @Query("DELETE FROM events")
     void purgeDb();
 
-    @Query("SELECT * FROM events WHERE date =:now AND isRecurring IS FALSE ORDER BY date ASC, time ASC")
+    @Query("SELECT * FROM events WHERE date =:now AND isRecurring IS FALSE AND deleted IS FALSE ORDER BY date ASC, time ASC")
     List<Event> getEventsByDateAndNotRecurring(Long now);
 
     @Update
@@ -33,6 +33,9 @@ public interface EventDao {
     @Query("SELECT * FROM events WHERE id =:parentEventId")
     Event findById(Long parentEventId);
 
-    @Query("SELECT * FROM events WHERE isRecurring IS TRUE")
+    @Query("SELECT * FROM events WHERE isRecurring IS TRUE AND deleted IS FALSE")
     List<Event> getAllRecurringEvents();
+
+    @Query("UPDATE events SET deleted = TRUE WHERE id =:id")
+    void delete(Long id);
 }

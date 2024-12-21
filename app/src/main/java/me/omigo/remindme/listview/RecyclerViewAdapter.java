@@ -2,18 +2,22 @@ package me.omigo.remindme.listview;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.os.CountDownTimer;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.card.MaterialCardView;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -30,6 +34,7 @@ import me.omigo.remindme.R;
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder> {
     private List<Event> events;
     private OnEventEditListener editListener;
+    private OnEventDeleteListener deleteListener;
     private EventDao eventDao;
 
     public void deleteSlaveEvents(long id) {
@@ -46,6 +51,10 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         void onEventEdit(Event event);
     }
 
+    public interface OnEventDeleteListener {
+        void onEventDelete(Event event);
+    }
+
     public RecyclerViewAdapter(List<Event> events, Context context) {
         this.events = events;
         this.eventDao = AppDatabase.getDatabase(context).eventDao();
@@ -55,6 +64,10 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         this.editListener = listener;
     }
 
+    public void setOnEventDeleteListener(OnEventDeleteListener listener) {
+        this.deleteListener = listener;
+    }
+
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public TextView textViewTitle;
         public TextView textViewPlace;
@@ -62,6 +75,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         public TextView textViewTime;
         public TextView textViewIsImportant;
         public ImageButton editButton;
+        public ImageButton deleteButton;
         public ImageView imageViewRecurring;
 
         public MaterialCardView materialCardView;
@@ -77,6 +91,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             editButton = itemView.findViewById(R.id.editButton);
             imageViewRecurring = itemView.findViewById(R.id.imageViewRecurring);
             materialCardView = itemView.findViewById(R.id.materialCardView);
+            deleteButton = itemView.findViewById(R.id.deleteButton);
         }
     }
 
@@ -120,7 +135,52 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             }
         });
 
-        if (event.getRecurring()) {
+        holder.deleteButton.setOnClickListener(v -> {
+            Log.d("recurring", "outside delete");
+            if (deleteListener != null) {
+                Log.d("recurring", "inside delete");
+                Context context = v.getContext();
+                MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(context);
+                View dialogView = LayoutInflater.from(context).inflate(R.layout.delete_confirmation_dialog, null);
+
+                TextView messageText = dialogView.findViewById(R.id.messageText);
+                Button positiveButton = dialogView.findViewById(R.id.positiveButton);
+                Button negativeButton = dialogView.findViewById(R.id.negativeButton);
+
+                messageText.setText("Czy na pewno usunąć to wydarzenie?");
+                positiveButton.setEnabled(false);
+                positiveButton.setText("TAK (5)");
+
+                AlertDialog dialog = builder
+                        .setView(dialogView)
+                        .setCancelable(true)
+                        .create();
+
+                // Set up countdown timer
+                new CountDownTimer(5000, 1000) {
+                    public void onTick(long millisUntilFinished) {
+                        int secondsLeft = (int) (millisUntilFinished / 1000);
+                        positiveButton.setText("TAK (" + secondsLeft + ")");
+                    }
+
+                    public void onFinish() {
+                        positiveButton.setEnabled(true);
+                        positiveButton.setText("TAK");
+                    }
+                }.start();
+
+                positiveButton.setOnClickListener(dialogButton -> {
+                    deleteListener.onEventDelete(event);
+                    dialog.dismiss();
+                });
+
+                negativeButton.setOnClickListener(dialogButton -> dialog.dismiss());
+
+                dialog.show();
+            }
+        });
+
+        if (event.getRecurring() || (event.getParentEventId() != null && !event.getParentEventId().equals(0L))) {
             holder.imageViewRecurring.setVisibility(View.VISIBLE);
         }
 
@@ -128,6 +188,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
         if (event.getParentEventId() != null && !event.getParentEventId().equals(0L)) {
             holder.editButton.setVisibility(View.GONE);
+            holder.deleteButton.setVisibility(View.GONE);
         }
 
         holder.itemView.setAlpha(
