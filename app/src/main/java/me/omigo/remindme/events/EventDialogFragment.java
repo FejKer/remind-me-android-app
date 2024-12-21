@@ -150,6 +150,7 @@ public class EventDialogFragment extends DialogFragment implements CustomTimePic
                 timeTextView.setText(selectedTime.toString());
             }
             isImportantSwitch.setChecked(eventToEdit.getPriority() == Priority.IMPORTANT);
+            isHiddenFromScreenSaver.setChecked(eventToEdit.getHiddenFromScreenSaver());
             setupRecurringUI(eventToEdit);
         }
 
