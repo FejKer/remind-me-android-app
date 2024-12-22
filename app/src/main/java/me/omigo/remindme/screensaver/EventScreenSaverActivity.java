@@ -4,6 +4,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.TextView;
@@ -87,8 +88,15 @@ public class EventScreenSaverActivity extends BaseActivity {
 
         eventDao = AppDatabase.getDatabase(getApplicationContext()).eventDao();
 
-        View rootView = findViewById(android.R.id.content);
-        rootView.setOnClickListener(v -> finish());
+        View rootView = findViewById(R.id.touchInterceptor);
+        //rootView.setOnClickListener(v -> finish());
+
+        rootView.setOnTouchListener((v, event) -> {
+            if (event.getAction() == MotionEvent.ACTION_UP) {
+                finish();
+            }
+            return true;
+        });
 
         // Set up periodic updates
         updateHandler = new Handler();
