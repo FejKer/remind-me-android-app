@@ -34,7 +34,7 @@ public class EventScreenSaverActivity extends BaseActivity {
     private RecyclerView eventsRecyclerView;
     private ConstraintLayout backgroundLayout;
     private Handler updateHandler;
-    private static final long UPDATE_INTERVAL = 60000; // Update every minute
+    private static final long UPDATE_INTERVAL = 30_000;
     private EventDao eventDao;
     private ScreenSaverEventAdapter eventAdapter;
     private static final int MAX_VISIBLE_EVENTS = 3;
