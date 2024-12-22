@@ -188,6 +188,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         });
 
         holder.textViewRecurring.setVisibility(View.GONE);
+        holder.imageViewRecurring.setVisibility(View.GONE);
 
         if (event.getRecurring() || (event.getParentEventId() != null && !event.getParentEventId().equals(0L))) {
             holder.imageViewRecurring.setVisibility(View.VISIBLE);
