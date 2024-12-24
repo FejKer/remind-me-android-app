@@ -62,10 +62,13 @@ public class ScreenSaverEventAdapter extends RecyclerView.Adapter<ScreenSaverEve
 
         // Calculate days text
         String daysText;
-        if (daysUntil == 0 && event.getDate().isEqual(LocalDate.now())) {
+
+        if (event.getDate().equals(LocalDate.now())) {
             daysText = "Dziś";
-        } else if (daysUntil == 1 || (daysUntil == 0 && !event.getDate().isEqual(LocalDate.now()))) {
+        } else if (event.getDate().minusDays(1).equals(LocalDate.now())) {
             daysText = "Jutro";
+        } else if (event.getDate().minusDays(2).equals(LocalDate.now())) {
+            daysText = "Pojutrze";
         } else {
             daysText = "Za " + daysUntil + " dni";
         }
