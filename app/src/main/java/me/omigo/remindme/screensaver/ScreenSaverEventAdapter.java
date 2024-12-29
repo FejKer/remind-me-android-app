@@ -70,7 +70,8 @@ public class ScreenSaverEventAdapter extends RecyclerView.Adapter<ScreenSaverEve
         } else if (event.getDate().minusDays(2).equals(LocalDate.now())) {
             daysText = "Pojutrze";
         } else {
-            daysText = "Za " + daysUntil + " dni";
+            long daysLeft = event.getDate().toEpochDay() - LocalDate.now().toEpochDay();
+            daysText = "Za " + daysLeft + " dni";
         }
         holder.daysLeftTextView.setText(daysText);
     }
